@@ -1,0 +1,384 @@
+{
+    "entity": {
+        "user": "User",
+        "users": "Users",
+        "role": "Role",
+        "roles": "Roles",
+        "my_account": "Account",
+        "my_informations": "Account Information"
+    },
+    "common": {
+        "contents": {
+            "password_requirements": {
+                "lowercase": "At least one lowercase",
+                "uppercase": "At least one uppercase",
+                "numeric": "At least one numeric",
+                "minimum_length": "Minimum {length} characters"
+            }
+        },
+        "messages": {
+            "no_records": "No records found",
+            "no_selected_records": "No records selected",
+            "no_search_results": "No search results found",
+            "no_permissions": "You do not have the necessary permisions. Please contact admins.",
+            "error": "An error occurred while processing your request",
+            "access_denied": "Access denied",
+            "not_found": "Not found",
+            "no_resources": "Requested resource is not available.",
+            "is_required": "This field is required",
+            "invalid_email": "Invalid email address",
+            "password_mismatch": "Passwords do not match",
+            "password_strength": "Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least {length} characters long",
+            "invalid_phone": "Invalid phone number",
+            "alpha_only": "Must contain only letters and spaces",
+            "max_length": "Maximum length is {length} characters",
+            "minimum_length": "Minimum length is {length} characters",
+            "require_numeric": "Must contain at least one numeric character",
+            "require_uppercase": "Must contain at least one uppercase letter",
+            "passwords_do_not_match": "Passwords do not match",
+            "current_and_new_password_same": "Current password and new password cannot be the same",
+            "image_type": "Image must be in .jpg, .jpeg, .png or .webp format",
+            "max_image_size": "Max image size is {size}."
+        },
+        "titles": {
+            "manage": "Manage {entity}",
+            "add": "Add new {entity}",
+            "dashboard": "Dashboard",
+            "my_informations": "My informations"
+        },
+        "labels": {
+            "updated": "Updated",
+            "created": "Created",
+            "deleted": "Deleted",
+            "password": "Password",
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "save": "Save",
+            "cancel": "Cancel",
+            "close": "Close",
+            "add": "Add",
+            "update": "Update",
+            "back": "Back",
+            "submit": "Submit",
+            "reset": "Reset",
+            "search": "Search",
+            "confirm": "Confirm",
+            "yes": "Yes",
+            "no": "No",
+            "ok": "Ok",
+            "new": "New",
+            "delete_selected": "Delete selected",
+            "export": "Export",
+            "apply": "Apply",
+            "clear": "Clear",
+            "clear_all_filters": "Clear all filters",
+            "today": "Today",
+            "tomorrow": "Tomorrow",
+            "yesterday": "Yesterday",
+            "days_ago": "{count} Days ago",
+            "weeks_ago": "{count} weeks ago",
+            "months_ago": "{count} months ago",
+            "warning": "Warning"
+        },
+        "tooltips": {
+            "edit": "Edit {entity}",
+            "delete": "Delete {entity}",
+            "add": "Add {entity}",
+            "view": "View {entity}",
+            "delete_selected": "Delete selected {entity}",
+            "export_selection": "Export selected {entity}",
+            "lock_row": "Lock this row",
+            "unlock_row": "Unlock this row",
+            "lock_column": "Lock this column",
+            "unlock_column": "Unlock this column",
+            "clear_all_filters": "Clear all filters"
+        },
+        "columns": {
+            "id": "ID",
+            "created_at": "Created at",
+            "updated_at": "Updated at",
+            "actions": "Actions"
+        },
+        "placeholders": {
+            "search": "Search...",
+            "select": "Select...",
+            "type": "Type...",
+            "displayed_columns": "Displayed columns"
+        },
+        "paggination": {
+            "showing_to_of_entity": "Showing {first} to {last} of {totalRecords} {entity}"
+        },
+        "confirmations": {
+            "delete": {
+                "title": "Delete {entity}",
+                "message": "Are you sure you want to delete this {entity}?"
+            },
+            "delete_selected": {
+                "title": "Delete selected {entity}",
+                "message": "Are you sure you want to delete the selected {entity}?"
+            }
+        },
+
+        "toasts": {
+            "create": {
+                "summary": "{entity} created",
+                "detail": "The {entity} has been created successfully"
+            },
+            "edit": {
+                "summary": "{entity} updated",
+                "detail": "The {entity} has been updated successfully"
+            },
+            "delete": {
+                "summary": "{entity} deleted",
+                "detail": "The {entity} has been deleted successfully"
+            },
+            "delete_selected": {
+                "summary": "Selected {entity} deleted",
+                "detail": "The selected {entity} have been deleted successfully"
+            },
+            "error": {
+                "summary": "An error occurred",
+                "detail": "An error occurred while processing your request"
+            },
+            "new": {
+                "summary": "New {entity}",
+                "detail": "New {entity} has been created"
+            },
+            "logout": {
+                "summary": "Session Expired",
+                "detail": "Your session has expired. Please log in again."
+            },
+            "login": {
+                "summary": "Login Successful",
+                "detail": "Welcome back!"
+            }
+        }
+    },
+    "login": {
+        "welcome": "Welcome",
+        "sign_in_message": "Please sign in",
+        "email": "Email address",
+        "password": "Password",
+        "sign_in": "Sign in",
+        "forgot_password": "Forgot password",
+        "error": "Login error"
+    },
+    "logout": {
+        "error": "Logout error"
+    },
+    "navigation": {
+        "side_bar": {
+            "home": "Home",
+            "dashboard": "Dashboard",
+            "user": "User",
+            "users": "Users",
+            "roles": "Roles"
+        },
+        "top_bar": {
+            "search": "Search...",
+            "notifications": "Notifications",
+            "settings": "Settings",
+            "myaccount": "My Account",
+            "logout": "Logout"
+        }
+    },
+    "role": {
+        "placeholders": {
+            "select_guard_name": "Select guard name",
+            "permissions_available": "Permissions available",
+            "permissions_selected": "Permissions selected"
+        },
+        "columns": {
+            "name": "Name",
+            "guard_name": "Guard name",
+            "permissions": "Permissions"
+        }
+    },
+    "user": {
+        "placeholders": {
+            "select_role": "Select role",
+            "roles_available": "Roles available",
+            "roles_selected": "Roles selected"
+        },
+        "columns": {
+            "name": "Name",
+            "email": "Email",
+            "password": "Password",
+            "password_confirmation": "Password confirmation",
+            "current_password": "Current Password",
+            "new_password": "New Password",
+            "confirm_new_password": "Confirm New Password",
+            "roles": "Roles",
+            "email_verified_at": "Email Verified At",
+            "phone": "Phone",
+            "address": "Address",
+            "created_at": "Created At",
+            "updated_at": "Updated At"
+        }
+    },
+    "myaccount": {
+        "tabs": {
+            "my_informations": "My Informations",
+            "profile": "Profile",
+            "company": "Company Info",
+            "security": "Security",
+            "activity": "Activity",
+            "team": "Team Members",
+            "preferences": "Preferences",
+            "integrations": "Integrations",
+            "subscription": "Subscription",
+            "usage": "Usage & Limits",
+            "danger": "Danger Zone"
+        },
+        "labels": {
+            "name": "Name",
+            "email": "Email",
+            "phone": "Phone",
+            "address": "Address",
+            "current_password": "Current Password",
+            "new_password": "New Password",
+            "confirm_password": "Confirm Password",
+            "change_password": "Change Password",
+            "change_password_description": "Change your password",
+            "update_profile": "Update Profile",
+            "delete_account": "Delete my account",
+            "theme_mode": "Theme mode",
+            "theme_mode_description": "Select your preferred theme mode",
+            "language": "Language",
+            "language_description": "Select your preferred language",
+            "change_informations": "Change Information",
+            "change_informations_description": "Update your account information",
+            "activity": "Activity",
+            "activity_description": "View your recent activities",
+            "danger_zone": "Danger Zone",
+            "danger_zone_description": "Manage your account's critical settings",
+            "delete_account_warning": "Deleting your account is irreversible. All your data will be permanently removed.",
+            "are_you_sure": "Are you sure you want to proceed?",
+            "extremely_important": "This action is extremely important and cannot be undone.",
+            "confirmation_phrase_description": "To verify, type 'delete my account' exactly as it appears",
+            "no_activities": "No activities found"
+        },
+        "messages": {
+            "profile_updated": "Profile updated successfully",
+            "confirmation_phrase_incorrect": "The confirmation phrase is incorrect. Please try again."
+        }
+    },
+    "primevue": {
+        "startsWith": "Starts with",
+        "contains": "Contains",
+        "notContains": "Not contains",
+        "endsWith": "Ends with",
+        "equals": "Equals",
+        "notEquals": "Not equals",
+        "noFilter": "No Filter",
+        "lt": "Less than",
+        "lte": "Less than or equal to",
+        "gt": "Greater than",
+        "gte": "Greater than or equal to",
+        "dateIs": "Date is",
+        "dateIsNot": "Date is not",
+        "dateBefore": "Date is before",
+        "dateAfter": "Date is after",
+        "clear": "Clear",
+        "apply": "Apply",
+        "matchAll": "Match All",
+        "matchAny": "Match Any",
+        "addRule": "Add Rule",
+        "removeRule": "Remove Rule",
+        "accept": "Yes",
+        "reject": "No",
+        "choose": "Choose",
+        "upload": "Upload",
+        "cancel": "Cancel",
+        "completed": "Completed",
+        "pending": "Pending",
+        "fileSizeTypes": ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
+        "dayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "dayNamesShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        "dayNamesMin": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+        "monthNames": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        "monthNamesShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        "chooseYear": "Choose Year",
+        "chooseMonth": "Choose Month",
+        "chooseDate": "Choose Date",
+        "prevDecade": "Previous Decade",
+        "nextDecade": "Next Decade",
+        "prevYear": "Previous Year",
+        "nextYear": "Next Year",
+        "prevMonth": "Previous Month",
+        "nextMonth": "Next Month",
+        "prevHour": "Previous Hour",
+        "nextHour": "Next Hour",
+        "prevMinute": "Previous Minute",
+        "nextMinute": "Next Minute",
+        "prevSecond": "Previous Second",
+        "nextSecond": "Next Second",
+        "am": "am",
+        "pm": "pm",
+        "today": "Today",
+        "weekHeader": "Wk",
+        "firstDayOfWeek": 0,
+        "showMonthAfterYear": false,
+        "dateFormat": "mm/dd/yy",
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong",
+        "passwordPrompt": "Enter a password",
+        "searchMessage": "{0} results are available",
+        "selectionMessage": "{0} items selected",
+        "emptySelectionMessage": "No selected item",
+        "emptySearchMessage": "No results found",
+        "fileChosenMessage": "{0} files",
+        "noFileChosenMessage": "No file chosen",
+        "emptyMessage": "No available options",
+        "aria.trueLabel": true,
+        "aria.falseLabel": false,
+        "aria.nullLabel": "Not Selected",
+        "aria.star": "1 star",
+        "aria.stars": "{star} stars",
+        "aria.selectAll": "All items selected",
+        "aria.unselectAll": "All items unselected",
+        "aria.close": "Close",
+        "aria.previous": "Previous",
+        "aria.next": "Next",
+        "aria.navigation": "Navigation",
+        "aria.scrollTop": "Scroll Top",
+        "aria.moveTop": "Move Top",
+        "aria.moveUp": "Move Up",
+        "aria.moveDown": "Move Down",
+        "aria.moveBottom": "Move Bottom",
+        "aria.moveToTarget": "Move to Target",
+        "aria.moveToSource": "Move to Source",
+        "aria.moveAllToTarget": "Move All to Target",
+        "aria.moveAllToSource": "Move All to Source",
+        "aria.pageLabel": "Page {page}",
+        "aria.firstPageLabel": "First Page",
+        "aria.lastPageLabel": "Last Page",
+        "aria.nextPageLabel": "Next Page",
+        "aria.prevPageLabel": "Previous Page",
+        "aria.rowsPerPageLabel": "Rows per page",
+        "aria.jumpToPageDropdownLabel": "Jump to Page Dropdown",
+        "aria.jumpToPageInputLabel": "Jump to Page Input",
+        "aria.selectRow": "Row Selected",
+        "aria.unselectRow": "Row Unselected",
+        "aria.expandRow": "Row Expanded",
+        "aria.collapseRow": "Row Collapsed",
+        "aria.showFilterMenu": "Show Filter Menu",
+        "aria.hideFilterMenu": "Hide Filter Menu",
+        "aria.filterOperator": "Filter Operator",
+        "aria.filterConstraint": "Filter Constraint",
+        "aria.editRow": "Row Edit",
+        "aria.saveEdit": "Save Edit",
+        "aria.cancelEdit": "Cancel Edit",
+        "aria.listView": "List View",
+        "aria.gridView": "Grid View",
+        "aria.slide": "Slide",
+        "aria.slideNumber": "{slideNumber}",
+        "aria.zoomImage": "Zoom Image",
+        "aria.zoomIn": "Zoom In",
+        "aria.zoomOut": "Zoom Out",
+        "aria.rotateRight": "Rotate Right",
+        "aria.rotateLeft": "Rotate Left"
+    }
+}
