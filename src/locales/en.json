@@ -171,6 +171,7 @@
         "side_bar": {
             "home": "Home",
             "dashboard": "Dashboard",
+            "customers": "Customers",
             "user": "User",
             "users": "Users",
             "roles": "Roles"

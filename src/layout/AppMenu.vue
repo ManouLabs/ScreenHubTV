@@ -20,6 +20,12 @@ const model = computed(() => [
                 visible: can('view_dashboard')
             },
             {
+                label: t('navigation.side_bar.customers'),
+                icon: 'pi pi-fw pi-folder-open',
+                to: '/admin/customers',
+                visible: can('view_customers')
+            },
+            {
                 label: t('navigation.side_bar.user'),
                 icon: 'pi pi-fw pi-user',
                 visible: can('view_users') || can('view_roles'),
