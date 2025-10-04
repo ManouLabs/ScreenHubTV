@@ -4,6 +4,8 @@
         "users": "Users",
         "role": "Role",
         "roles": "Roles",
+        "customer": "Customer",
+        "customers": "Customers",
         "my_account": "Account",
         "my_informations": "Account Information"
     },
@@ -216,6 +218,65 @@
             "address": "Address",
             "created_at": "Created At",
             "updated_at": "Updated At"
+        }
+    },
+    "customer": {
+        "columns": {
+            "legal_name": "Legal Name",
+            "trade_name": "Trade Name",
+            "address": "Address",
+            "rc_number": "RC Number",
+            "nif": "NIF",
+            "nis": "NIS",
+            "rib": "RIB",
+            "created_at": "Created At",
+            "updated_at": "Updated At"
+        }
+    },
+    "contact": {
+        "labels": {
+            "civility": "Civility",
+            "first_name": "First Name",
+            "last_name": "Last Name",
+            "name": "Name",
+            "contact": "Contact",
+            "contacts": "Contacts",
+            "contact_methods": "Contact Methods",
+            "summary": "Summary"
+        },
+        "civility": {
+            "mr": "Mr",
+            "mme": "Mrs"
+        },
+        "types": {
+            "email": "Email",
+            "landline": "Landline",
+            "mobile": "Mobile",
+            "url": "Website/URL"
+        },
+        "placeholders": {
+            "email": "Enter email address",
+            "landline": "Enter landline number (e.g., 020135478)",
+            "mobile": "Enter mobile number (e.g., 0553338529)",
+            "url": "Enter website URL"
+        },
+        "buttons": {
+            "add_contact": "Add Contact",
+            "add_contact_method": "Add Contact Method",
+            "remove": "Remove",
+            "remove_contact": "Remove Contact"
+        },
+        "messages": {
+            "no_contact_methods": "No contact methods added yet. Click 'Add Contact Method' to get started."
+        },
+        "validation": {
+            "first_name_required": "First name is required",
+            "last_name_required": "Last name is required",
+            "invalid_email": "Please enter a valid email address",
+            "invalid_landline": "Please enter a valid Algerian landline number (e.g., 020135478)",
+            "invalid_mobile": "Please enter a valid Algerian mobile number (e.g., 0553338529)",
+            "invalid_url": "Please enter a valid URL",
+            "required": "This field is required"
         }
     },
     "myaccount": {

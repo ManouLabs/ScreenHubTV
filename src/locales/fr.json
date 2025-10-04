@@ -160,6 +160,52 @@
             "permissions": "Autorisations"
         }
     },
+    "contact": {
+        "labels": {
+            "civility": "Civilité",
+            "first_name": "Prénom",
+            "last_name": "Nom de famille",
+            "name": "Nom",
+            "contact": "Contact",
+            "contacts": "Contacts",
+            "contact_methods": "Méthodes de contact",
+            "summary": "Résumé"
+        },
+        "civility": {
+            "mr": "M.",
+            "mme": "Mme"
+        },
+        "types": {
+            "email": "Email",
+            "landline": "Téléphone fixe",
+            "mobile": "Mobile",
+            "url": "Site web/URL"
+        },
+        "placeholders": {
+            "email": "Saisir l'adresse email",
+            "landline": "Saisir le numéro de téléphone fixe (ex: 020135478)",
+            "mobile": "Saisir le numéro de mobile (ex: 0553338529)",
+            "url": "Saisir l'URL du site web"
+        },
+        "buttons": {
+            "add_contact": "Ajouter un contact",
+            "add_contact_method": "Ajouter une méthode de contact",
+            "remove": "Supprimer",
+            "remove_contact": "Supprimer le contact"
+        },
+        "messages": {
+            "no_contact_methods": "Aucune méthode de contact ajoutée. Cliquez sur 'Ajouter une méthode de contact' pour commencer."
+        },
+        "validation": {
+            "first_name_required": "Le prénom est requis",
+            "last_name_required": "Le nom de famille est requis",
+            "invalid_email": "Veuillez saisir une adresse email valide",
+            "invalid_landline": "Veuillez saisir un numéro de téléphone fixe algérien valide (ex: 020135478)",
+            "invalid_mobile": "Veuillez saisir un numéro de mobile algérien valide (ex: 0553338529)",
+            "invalid_url": "Veuillez saisir une URL valide",
+            "required": "Ce champ est requis"
+        }
+    },
     "user": {
         "placeholders": {
             "select_role": "Sélectionner un rôle",

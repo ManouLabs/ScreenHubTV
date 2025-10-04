@@ -3,7 +3,6 @@ import { useDynamicColumns } from '@/composables/useDynamicColumns';
 import dayjs from '@/plugins/dayjs';
 import { useCustomerService } from '@/services/useCustomerService';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { useColumnStore } from '@/stores/useColumnStore';
 import { useLoading } from '@/stores/useLoadingStore';
 import { extractLazyParams, findRecordIndex, formatDate } from '@/utilities/helper';
 import { ACTIONS, useShowToast } from '@/utilities/toast';
@@ -23,7 +22,6 @@ const loading = useLoading();
 const lazyParams = ref({});
 const total = ref();
 const rows = ref();
-const columnStore = useColumnStore();
 const authStore = useAuthStore();
 const confirm = useConfirm();
 const dialog = useDialog();
@@ -184,7 +182,7 @@ const toggleColumnFrozen = (column) => {
 };
 
 function addRecord() {
-    record.value = { legal_name: null, trade_name: null, rc_number: null, address: null, nif: null, nis: null, rib: null, created_at: null, updated_at: null };
+    record.value = { legal_name: null, trade_name: null, rc_number: null, address: null, nif: null, nis: null, rib: null, created_at: null, updated_at: null, contacts: [] };
     openDialog();
 }
 function editRecord(row) {
@@ -196,7 +194,7 @@ const openDialog = () => {
         props: {
             header: t('common.titles.add', { entity: t('entity.customer') }),
             style: {
-                width: '30vw'
+                width: '40vw'
             },
             breakpoints: {
                 '960px': '75vw',
@@ -372,7 +370,7 @@ onUnmounted(() => {
                             </template>
                             <template #center>
                                 <FloatLabel class="w-full" variant="on">
-                                    <MultiSelect id="selected_columns" :modelValue="selectedColumns" :options="defaultColumns" optionLabel="header" @update:modelValue="columnChanged" />
+                                    <MultiSelect id="selected_columns" :modelValue="selectedColumns" display="chip" :maxSelectedLabels="4" :options="defaultColumns" optionLabel="header" @update:modelValue="columnChanged" />
                                     <label for="selected_columns">{{ t('common.placeholders.displayed_columns') }}</label>
                                 </FloatLabel>
                             </template>

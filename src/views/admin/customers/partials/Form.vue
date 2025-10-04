@@ -1,126 +1,174 @@
 <script setup>
-import { useUserService } from '@/services/useUserService';
+import { useCustomerService } from '@/services/useCustomerService';
 import { useLoading } from '@/stores/useLoadingStore';
 import { ACTIONS, useShowToast } from '@/utilities/toast';
-import { inject, onMounted, ref } from 'vue';
-
+import { zodResolver } from '@primevue/forms/resolvers/zod';
+import { inject, ref } from 'vue';
+import { z } from 'zod';
 const { showToast } = useShowToast();
-const errors = ref();
 const loading = useLoading();
 const dialogRef = inject('dialogRef');
-const record = ref({});
 const action = ref();
-const rolesOptions = ref([]);
 
-onMounted(() => {
-    record.value = dialogRef.value.data.record;
-    rolesOptions.value = dialogRef.value.data.rolesOptions;
-    action.value = dialogRef.value.data.action;
-});
+const initialValues = {
+    legal_name: '',
+    trade_name: '',
+    rc_number: '',
+    address: '',
+    nif: '',
+    nis: '',
+    rib: '',
+    contacts: []
+};
 
-function saveRecord() {
-    record.value.roles = rolesOptions.value[1].map((permission) => permission.id);
-    loading.startPageLoading();
+const resolver = zodResolver(
+    z.object({
+        legal_name: z.string().min(1, { message: 'customer.validation.legal_name_required' }),
+        trade_name: z.string().min(1, { message: 'customer.validation.trade_name_required' }),
+        rc_number: z.string().min(1, { message: 'customer.validation.rc_number_required' }),
+        address: z.string().min(1, { message: 'customer.validation.address_required' }),
+        nif: z.string().min(1, { message: 'customer.validation.nif_required' }),
+        nis: z.string().min(1, { message: 'customer.validation.nis_required' }),
+        rib: z.string().min(1, { message: 'customer.validation.rib_required' })
+    })
+);
 
-    const serviceAction = action.value === ACTIONS.CREATE ? useUserService.storeUser : (userData) => useUserService.updateUser(record.value.id, userData);
+const onFormSubmit = ({ valid, values }) => {
+    if (valid) {
+        loading.startPageLoading();
 
-    serviceAction(record.value)
-        .then((response) => {
-            dialogRef.value.close({ record: response.data, action: action.value });
-        })
-        .catch((error) => {
-            if (error.status != 422) {
-                errors.value = error.response.data.errors;
-                showToast('error', action.value, 'user', 'tr');
-            }
-        })
-        .finally(() => {
-            loading.stopPageLoading();
-        });
-}
+        // Transform contacts back to API format
+        const formData = {
+            ...values,
+            contacts: initialValues.contacts.map((contact) => ({
+                id: contact.id,
+                civility: contact.civility,
+                first_name: contact.firstName,
+                last_name: contact.lastName,
+                contact_methods: (contact.contactMethods || []).map((method) => ({
+                    id: method.id,
+                    contact_id: method.contact_id,
+                    type: method.type,
+                    value: method.value
+                }))
+            }))
+        };
+
+        const serviceAction = action.value === ACTIONS.CREATE ? useCustomerService.storeCustomer : (customerData) => useCustomerService.updateCustomer(initialValues.id, customerData);
+
+        serviceAction(formData)
+            .then((response) => {
+                showToast('success', action.value, 'customer', 'tr');
+                dialogRef.value.close({ record: response.data, action: action.value });
+            })
+            .catch((error) => {
+                if (error.response?.status === 422) {
+                    // Handle validation errors - they will be displayed by FormField
+                    console.error('Validation errors:', error.response.data.errors);
+                }
+                showToast('error', action.value, 'customer', 'tr');
+            })
+            .finally(() => {
+                loading.stopPageLoading();
+            });
+    }
+};
+
 const closeDialog = () => {
     dialogRef.value.close();
 };
 </script>
 <template>
-    <form @submit.prevent="saveRecord">
-        <div class="flex flex-col gap-8 pt-2">
-            <div>
-                <FloatLabel variant="on">
-                    <label for="name" class="block font-bold mb-3">{{ $t('user.columns.name') }}</label>
-                    <InputText :disabled="loading.isPageLoading" id="name" v-model.trim="record.name" autofocus fluid :invalid="errors?.name ? true : false" required />
-                </FloatLabel>
-                <ErrorMessage field="name" :errors="errors" />
+    <Form :validateOnBlur="true" :initialValues="initialValues" :resolver="resolver" @submit="onFormSubmit" class="flex flex-col space-y-4">
+        <div class="grid grid-cols-2 gap-4 pt-2">
+            <div class="col-span-2">
+                <FormField v-slot="$field" name="legal_name" class="w-full">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputText id="legal_name" name="legal_name" v-bind="$field" :disabled="loading.isPageLoading" autofocus class="w-full" />
+                        <label for="legal_name">{{ $t('customer.columns.legal_name') }}</label>
+                    </FloatLabel>
+                    <Message v-if="$field.invalid" severity="error" size="small">
+                        {{ $field.error?.message ? $t($field.error.message) : $field.error }}
+                    </Message>
+                </FormField>
             </div>
             <div>
-                <FloatLabel variant="on">
-                    <label for="email" class="block font-bold mb-3">{{ $t('user.columns.email') }}</label>
-                    <InputText type="email" :disabled="loading.isPageLoading" id="email" v-model.trim="record.email" autofocus fluid :invalid="errors?.email ? true : false" required />
-                </FloatLabel>
-                <ErrorMessage field="email" :errors="errors" />
+                <FormField v-slot="$field" name="trade_name" class="w-full">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputText id="trade_name" name="trade_name" v-bind="$field" :disabled="loading.isPageLoading" class="w-full" />
+                        <label for="trade_name">{{ $t('customer.columns.trade_name') }}</label>
+                    </FloatLabel>
+                    <Message v-if="$field.invalid" severity="error" size="small">
+                        {{ $field.error?.message ? $t($field.error.message) : $field.error }}
+                    </Message>
+                </FormField>
             </div>
             <div>
-                <FloatLabel variant="on">
-                    <Password v-model.trim="record.password" :disabled="loading.isPageLoading" :invalid="errors?.password ? true : false" :required="action === ACTIONS.CREATE" autofocus fluid toggleMask>
-                        <template #header>
-                            <div class="font-semibold text-xm mb-4">{{ $t('user.columns.password') }}</div>
-                        </template>
-                        <template #footer>
-                            <Divider />
-                            <ul class="pl-2 my-0 leading-normal">
-                                <li>{{ $t('common.contents.password_requirements.lowercase') }}</li>
-                                <li>{{ $t('common.contents.password_requirements.uppercase') }}</li>
-                                <li>{{ $t('common.contents.password_requirements.numeric') }}</li>
-                                <li>{{ $t('common.contents.password_requirements.minimum_length', { length: 8 }) }}</li>
-                            </ul>
-                        </template>
-                    </Password>
-                    <label for="password">{{ $t('user.columns.password') }}</label>
-                </FloatLabel>
-                <ErrorMessage field="password" :errors="errors" />
+                <FormField v-slot="$field" name="rc_number" class="w-full">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputText id="rc_number" name="rc_number" v-bind="$field" :disabled="loading.isPageLoading" class="w-full" />
+                        <label for="rc_number">{{ $t('customer.columns.rc_number') }}</label>
+                    </FloatLabel>
+                    <Message v-if="$field.invalid" severity="error" size="small">
+                        {{ $field.error?.message ? $t($field.error.message) : $field.error }}
+                    </Message>
+                </FormField>
+            </div>
+            <div>
+                <FormField v-slot="$field" name="address" class="w-full">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputText id="address" name="address" v-bind="$field" :disabled="loading.isPageLoading" class="w-full" />
+                        <label for="address">{{ $t('customer.columns.address') }}</label>
+                    </FloatLabel>
+                    <Message v-if="$field.invalid" severity="error" size="small">
+                        {{ $field.error?.message ? $t($field.error.message) : $field.error }}
+                    </Message>
+                </FormField>
+            </div>
+            <div>
+                <FormField v-slot="$field" name="nif" class="w-full">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputText id="nif" name="nif" v-bind="$field" :disabled="loading.isPageLoading" class="w-full" />
+                        <label for="nif">{{ $t('customer.columns.nif') }}</label>
+                    </FloatLabel>
+                    <Message v-if="$field.invalid" severity="error" size="small">
+                        {{ $field.error?.message ? $t($field.error.message) : $field.error }}
+                    </Message>
+                </FormField>
+            </div>
+            <div>
+                <FormField v-slot="$field" name="nis" class="w-full">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputText id="nis" name="nis" v-bind="$field" :disabled="loading.isPageLoading" class="w-full" />
+                        <label for="nis">{{ $t('customer.columns.nis') }}</label>
+                    </FloatLabel>
+                    <Message v-if="$field.invalid" severity="error" size="small">
+                        {{ $field.error?.message ? $t($field.error.message) : $field.error }}
+                    </Message>
+                </FormField>
+            </div>
+            <div>
+                <FormField v-slot="$field" name="rib" class="w-full">
+                    <FloatLabel variant="on" class="w-full">
+                        <InputText id="rib" name="rib" v-bind="$field" :disabled="loading.isPageLoading" class="w-full" />
+                        <label for="rib">{{ $t('customer.columns.rib') }}</label>
+                    </FloatLabel>
+                    <Message v-if="$field.invalid" severity="error" size="small">
+                        {{ $field.error?.message ? $t($field.error.message) : $field.error }}
+                    </Message>
+                </FormField>
             </div>
 
-            <div>
-                <FloatLabel variant="on">
-                    <Password v-model.trim="record.password_confirmation" :disabled="loading.isPageLoading" :invalid="errors?.password ? true : false" :required="action === ACTIONS.CREATE" autofocus fluid toggleMask name="password_confirmation" />
-                    <label for="password_confirmation">{{ $t('user.columns.password_confirmation') }}</label>
-                </FloatLabel>
-                <ErrorMessage field="password_confirmation" :errors="errors" />
-            </div>
-
-            <div>
-                <ErrorMessage field="roles" :errors="errors" />
-                <PickList
-                    required
-                    :disabled="loading.isPageLoading"
-                    v-model="rolesOptions"
-                    dataKey="id"
-                    breakpoint="1400px"
-                    :showSourceControls="false"
-                    :showTargetControls="false"
-                    striped
-                    :invalid="errors?.roles ? true : false"
-                    pt:header:class="bg-blue-500"
-                    :pt="{
-                        sourceListContainer: { class: errors?.roles ? 'rounded-md border border-red-500' : '' },
-                        targetListContainer: { class: errors?.roles ? 'rounded-md border border-red-500' : '' }
-                    }"
-                >
-                    <template #sourceheader>
-                        {{ $t('user.placeholders.roles_available') }}
-                    </template>
-                    <template #targetheader>
-                        {{ $t('user.placeholders.roles_selected') }}
-                    </template>
-                    <template #option="{ option }">
-                        {{ option.name }}
-                    </template>
-                </PickList>
+            <div class="col-span-2">
+                <Divider align="center" type="dotted">
+                    {{ $t('contact.labels.contacts') }}
+                </Divider>
+                <!-- <Contact v-model="initialValues.contacts" :disabled="loading.isPageLoading" @change="handleContactChange" /> -->
             </div>
         </div>
         <div class="flex justify-end gap-2 mt-4">
             <Button :label="$t('common.labels.cancel')" icon="pi pi-times" text @click="closeDialog" />
             <Button :label="$t('common.labels.save')" icon="pi pi-check" type="submit" :loading="loading.isPageLoading" />
         </div>
-    </form>
+    </Form>
 </template>
