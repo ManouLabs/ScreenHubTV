@@ -141,6 +141,9 @@ const removeContactMethod = (contactIndex, methodIndex) => {
                             <InputText :id="`lastName_${contactIndex}`" v-model="contact.last_name" class="w-full" required />
                             <label :for="`lastName_${contactIndex}`">{{ t('contact.labels.last_name') }}</label>
                         </FloatLabel>
+                        <Message v-if="authStore.errors?.[`contacts.${contactIndex}.contact_methods.${methodIndex}.type`]?.[0]" severity="error" size="small">
+                            {{ authStore.errors?.[`contacts.${contactIndex}.contact_methods.${methodIndex}.type`]?.[0] }}
+                        </Message>
                     </div>
                 </div>
 
