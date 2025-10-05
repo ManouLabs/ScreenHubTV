@@ -34,7 +34,7 @@ const records = ref();
 const record = ref(null);
 const selectedRecords = ref();
 
-const defaultFields = ['legal_name', 'trade_name', 'rc_number', 'address', 'nif', 'nis', 'rib', 'created_at', 'updated_at'];
+const defaultFields = ['legal_name', 'trade_name', 'address', 'created_at', 'updated_at'];
 const defaultColumns = computed(() =>
     defaultFields.map((field) => ({
         field,
@@ -168,11 +168,7 @@ const toggleLock = (data, frozen, index) => {
 const frozenColumns = ref({
     legal_name: false,
     trade_name: false,
-    rc_number: false,
     address: false,
-    nif: false,
-    nis: false,
-    rib: false,
     created_at: false,
     updated_at: false
 });
@@ -182,7 +178,16 @@ const toggleColumnFrozen = (column) => {
 };
 
 function addRecord() {
-    record.value = { legal_name: null, trade_name: null, rc_number: null, address: null, nif: null, nis: null, rib: null, created_at: null, updated_at: null, contacts: [] };
+    record.value = {
+        legal_name: null,
+        trade_name: null,
+        rc_number: null,
+        address: null,
+        nif: null,
+        nis: null,
+        rib: null,
+        contacts: [{ civility: null, first_name: '', last_name: '', contact_methods: [{ contact_id: null, type: 'mobile', value: '' }] }]
+    };
     openDialog();
 }
 function editRecord(row) {
@@ -275,11 +280,7 @@ function getDefaultFilters() {
         id: { value: null, matchMode: FilterMatchMode.CONTAINS },
         legal_name: { value: null, matchMode: FilterMatchMode.CONTAINS },
         trade_name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        rc_number: { value: null, matchMode: FilterMatchMode.CONTAINS },
         address: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        nif: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        nis: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        rib: { value: null, matchMode: FilterMatchMode.CONTAINS },
         created_at: { value: null, matchMode: FilterMatchMode.DATE_IS },
         updated_at: { value: null, matchMode: FilterMatchMode.DATE_IS }
     };
@@ -512,162 +513,6 @@ onUnmounted(() => {
                         <DataCell>
                             <div :class="{ 'font-bold': frozenColumns.address }">{{ data.address }}</div></DataCell
                         >
-                    </template>
-                    <template #filter="{ filterModel, applyFilter }">
-                        <InputGroup>
-                            <InputText v-model="filterModel.value" size="small" />
-                            <InputGroupAddon>
-                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear', 'filter')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </template>
-                </Column>
-                <Column
-                    :showClearButton="false"
-                    :showApplyButton="false"
-                    :showFilterMatchModes="false"
-                    :showFilterOperator="false"
-                    columnKey="rc_number"
-                    field="rc_number"
-                    :frozen="frozenColumns.rc_number"
-                    v-if="selectedColumns.some((column) => column.field === 'rc_number')"
-                    sortable
-                    class="min-w-32"
-                >
-                    <template #header>
-                        <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.rc_number }">{{ t('customer.columns.rc_number') }}</div>
-                            <Button
-                                v-tooltip.top="frozenColumns.rc_number ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.rc_number ? 'pi pi-lock' : 'pi pi-lock-open'"
-                                text
-                                @click="toggleColumnFrozen('rc_number')"
-                                severity="contrast"
-                            />
-                        </div>
-                    </template>
-                    <template #body="{ data }">
-                        <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.rc_number }">{{ data.rc_number }}</div>
-                        </DataCell>
-                    </template>
-                    <template #filter="{ filterModel, applyFilter }">
-                        <InputGroup>
-                            <InputText v-model="filterModel.value" size="small" />
-                            <InputGroupAddon>
-                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear', 'filter')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </template>
-                </Column>
-                <Column
-                    :showClearButton="false"
-                    :showApplyButton="false"
-                    :showFilterMatchModes="false"
-                    :showFilterOperator="false"
-                    columnKey="nif"
-                    field="nif"
-                    :frozen="frozenColumns.nif"
-                    v-if="selectedColumns.some((column) => column.field === 'nif')"
-                    sortable
-                    class="min-w-32"
-                >
-                    <template #header>
-                        <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.nif }">{{ t('customer.columns.nif') }}</div>
-                            <Button
-                                v-tooltip.top="frozenColumns.nif ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.nif ? 'pi pi-lock' : 'pi pi-lock-open'"
-                                text
-                                @click="toggleColumnFrozen('nif')"
-                                severity="contrast"
-                            />
-                        </div>
-                    </template>
-                    <template #body="{ data }">
-                        <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.nif }">{{ data.nif }}</div>
-                        </DataCell>
-                    </template>
-                    <template #filter="{ filterModel, applyFilter }">
-                        <InputGroup>
-                            <InputText v-model="filterModel.value" size="small" />
-                            <InputGroupAddon>
-                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear', 'filter')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </template>
-                </Column>
-                <Column
-                    :showClearButton="false"
-                    :showApplyButton="false"
-                    :showFilterMatchModes="false"
-                    :showFilterOperator="false"
-                    columnKey="nis"
-                    field="nis"
-                    :frozen="frozenColumns.nis"
-                    v-if="selectedColumns.some((column) => column.field === 'nis')"
-                    sortable
-                    class="min-w-32"
-                >
-                    <template #header>
-                        <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.nis }">{{ t('customer.columns.nis') }}</div>
-                            <Button
-                                v-tooltip.top="frozenColumns.nis ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.nis ? 'pi pi-lock' : 'pi pi-lock-open'"
-                                text
-                                @click="toggleColumnFrozen('nis')"
-                                severity="contrast"
-                            />
-                        </div>
-                    </template>
-                    <template #body="{ data }">
-                        <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.nis }">{{ data.nis }}</div>
-                        </DataCell>
-                    </template>
-                    <template #filter="{ filterModel, applyFilter }">
-                        <InputGroup>
-                            <InputText v-model="filterModel.value" size="small" />
-                            <InputGroupAddon>
-                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear', 'filter')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </template>
-                </Column>
-                <Column
-                    :showClearButton="false"
-                    :showApplyButton="false"
-                    :showFilterMatchModes="false"
-                    :showFilterOperator="false"
-                    columnKey="rib"
-                    field="rib"
-                    :frozen="frozenColumns.rib"
-                    v-if="selectedColumns.some((column) => column.field === 'rib')"
-                    sortable
-                    class="min-w-32"
-                >
-                    <template #header>
-                        <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.rib }">{{ t('customer.columns.rib') }}</div>
-                            <Button
-                                v-tooltip.top="frozenColumns.rib ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.rib ? 'pi pi-lock' : 'pi pi-lock-open'"
-                                text
-                                @click="toggleColumnFrozen('rib')"
-                                severity="contrast"
-                            />
-                        </div>
-                    </template>
-                    <template #body="{ data }">
-                        <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.rib }">{{ data.rib }}</div>
-                        </DataCell>
                     </template>
                     <template #filter="{ filterModel, applyFilter }">
                         <InputGroup>

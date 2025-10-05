@@ -22,6 +22,7 @@ declare module 'vue' {
     Dropdown: typeof import('primevue/dropdown')['default']
     DynamicDialog: typeof import('primevue/dynamicdialog')['default']
     ErrorMessage: typeof import('./src/components/ErrorMessage.vue')['default']
+    Fieldset: typeof import('primevue/fieldset')['default']
     FloatingConfigurator: typeof import('./src/components/FloatingConfigurator.vue')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     FormField: typeof import('@primevue/forms/formfield')['default']
