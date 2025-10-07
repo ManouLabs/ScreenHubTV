@@ -28,10 +28,14 @@
             "not_found": "Not found",
             "no_resources": "Requested resource is not available.",
             "is_required": "This field is required",
-            "invalid_email": "Invalid email address",
+            "invalid_email": "Enter a valid email address.",
+            "invalid_url": "Enter a valid URL (e.g., https://www.example.com)",
+            "invalid_mobile": "Enter a valid mobile number (e.g., 0553338529)",
+            "invalid_landline": "Enter a valid landline number (e.g., 0212345678)",
             "password_mismatch": "Passwords do not match",
             "password_strength": "Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least {length} characters long",
             "invalid_phone": "Invalid phone number",
+            "invalid_contact_method": "Invalid contact method",
             "alpha_only": "Must contain only letters and spaces",
             "max_length": "Maximum length is {length} characters",
             "minimum_length": "Minimum length is {length} characters",
@@ -245,7 +249,9 @@
         },
         "civility": {
             "mr": "Mr",
-            "mme": "Mrs"
+            "mrs": "Mrs",
+            "ms": "Ms",
+            "dr": "Dr"
         },
         "types": {
             "email": "Email",

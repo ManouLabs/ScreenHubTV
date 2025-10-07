@@ -31,6 +31,26 @@ const { t } = useI18n();
 const recordDataTable = ref();
 const records = ref();
 
+// Transient highlights for newly added/updated records
+const highlights = ref({}); // { [id]: 'new' | 'updated' }
+
+function markHighlight(id, type, duration = 12000) {
+    // set highlight
+    highlights.value = { ...highlights.value, [id]: type };
+    // auto clear after duration; only clear if unchanged type
+    setTimeout(() => {
+        if (highlights.value[id] === type) {
+            const { [id]: _omit, ...rest } = highlights.value;
+            highlights.value = rest;
+        }
+    }, duration);
+}
+
+// Make entire highlighted row bold
+function getRowClass(data) {
+    return { 'font-bold': !!highlights.value?.[data.id] };
+}
+
 const record = ref(null);
 const selectedRecords = ref();
 
@@ -142,6 +162,7 @@ function handleUpdate(event) {
     const index = findRecordIndex(records, event.data.id);
     if (index !== -1) {
         records.value[index] = event.data;
+        markHighlight(event.data.id, 'updated');
     }
 }
 
@@ -149,6 +170,7 @@ function handleStore(event) {
     const exists = records.value.some((record) => record.id === event.data.id);
     if (!exists) {
         records.value.unshift(event.data);
+        markHighlight(event.data.id, 'new');
     }
 }
 
@@ -178,6 +200,7 @@ const toggleColumnFrozen = (column) => {
 };
 
 function addRecord() {
+    authStore.errors = {};
     record.value = {
         legal_name: null,
         trade_name: null,
@@ -186,11 +209,12 @@ function addRecord() {
         nif: null,
         nis: null,
         rib: null,
-        contacts: [{ civility: null, first_name: '', last_name: '', contact_methods: [{ contact_id: null, type: 'mobile', value: '' }] }]
+        contacts: [{ civility: null, first_name: '', last_name: '', contactMethods: [{ contact_id: null, type: 'mobile', value: '' }] }]
     };
     openDialog();
 }
 function editRecord(row) {
+    authStore.errors = {};
     record.value = row;
     openDialog();
 }
@@ -217,12 +241,14 @@ const openDialog = () => {
                 switch (result.data?.action) {
                     case ACTIONS.CREATE:
                         records.value.unshift(result.data.record);
-                        showToast('success', ACTIONS.CREATE, 'user', 'tc');
+                        markHighlight(result.data.record.id, 'new');
+                        showToast('success', ACTIONS.CREATE, 'customer', 'tc');
                         break;
                     case ACTIONS.EDIT: {
                         const index = findRecordIndex(records, result.data.record.id);
                         records.value[index] = result.data.record;
-                        showToast('success', ACTIONS.EDIT, 'user', 'tc');
+                        markHighlight(result.data.record.id, 'updated');
+                        showToast('success', ACTIONS.EDIT, 'customer', 'tc');
                         break;
                     }
                     default:
@@ -304,6 +330,7 @@ onUnmounted(() => {
                 dataKey="id"
                 v-model:selection="selectedRecords"
                 :value="records"
+                :rowClass="getRowClass"
                 @filter="onFilter($event)"
                 v-model:filters="filters"
                 filterDisplay="menu"
@@ -433,8 +460,12 @@ onUnmounted(() => {
                     </template>
                     <template #body="{ data }">
                         <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.legal_name }">{{ data.legal_name }}</div></DataCell
-                        >
+                            <div class="flex items-center gap-2" :class="{ 'font-bold': frozenColumns.legal_name || highlights[data.id] }">
+                                <span>{{ data.legal_name }}</span>
+                                <Tag v-if="highlights[data.id] === 'new'" value="NEW" severity="success" rounded size="small" />
+                                <Tag v-else-if="highlights[data.id] === 'updated'" value="UPDATED" severity="info" rounded size="small" />
+                            </div>
+                        </DataCell>
                     </template>
                     <template #filter="{ filterModel, applyFilter }">
                         <InputGroup>

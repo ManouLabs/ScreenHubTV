@@ -4,6 +4,8 @@ import { useCustomerService } from '@/services/useCustomerService';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useLoading } from '@/stores/useLoadingStore';
 import { ACTIONS, useShowToast } from '@/utilities/toast';
+import { customerSchema } from '@/validations/customer';
+import { validate, validateField } from '@/validations/validate';
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -14,25 +16,40 @@ const loading = useLoading();
 const record = ref({});
 const dialogRef = inject('dialogRef');
 const action = ref();
-onMounted(() => {
-    record.value = dialogRef.value.data.record;
-    action.value = dialogRef.value.data.action;
-});
 
-// Handle contact changes
-const handleContactChange = (contacts) => {
-    record.contacts = contacts;
+// Use external customer schema
+const schema = customerSchema;
+
+// Manual validation function using reusable helper
+const validateForm = () => {
+    const { ok, errors } = validate(schema, record.value);
+    authStore.errors = ok ? {} : errors;
+    return ok;
+};
+
+// Field-level validation on blur
+const onBlurField = (path) => {
+    const { ok, errors } = validateField(schema, record.value, path);
+    if (ok) {
+        authStore.clearErrors([path]);
+    } else {
+        authStore.errors = { ...authStore.errors, ...errors };
+    }
 };
 
 // Submit form
 const onFormSubmit = () => {
+    // Validate form before submission
+    if (!validateForm()) {
+        return;
+    }
+
     loading.startPageLoading();
 
     const serviceAction = action.value === ACTIONS.CREATE ? useCustomerService.storeCustomer : (customerData) => useCustomerService.updateCustomer(record.value.id, customerData);
 
     serviceAction(record.value)
         .then((response) => {
-            showToast('success', action.value, 'customer', 'tr');
             dialogRef.value.close({ record: response.data, action: action.value });
         })
         .catch((error) => {
@@ -47,6 +64,11 @@ const onFormSubmit = () => {
 const closeDialog = () => {
     dialogRef.value.close();
 };
+
+onMounted(() => {
+    record.value = dialogRef.value.data.record;
+    action.value = dialogRef.value.data.action;
+});
 </script>
 <template>
     <form @submit.prevent="onFormSubmit" class="flex flex-col space-y-4">
@@ -54,57 +76,111 @@ const closeDialog = () => {
             <!-- Legal Name -->
             <div class="col-span-2">
                 <FloatLabel variant="on" class="w-full">
-                    <InputText id="legal_name" v-model="record.legal_name" :disabled="loading.isPageLoading" autofocus class="w-full" required />
+                    <InputText
+                        id="legal_name"
+                        v-model="record.legal_name"
+                        :disabled="loading.isPageLoading"
+                        autofocus
+                        class="w-full"
+                        :invalid="authStore.errors?.['legal_name']?.[0] ? true : false"
+                        @input="() => authStore.clearErrors([`legal_name`])"
+                        @blur="() => onBlurField('legal_name')"
+                    />
                     <label for="legal_name">{{ t('customer.columns.legal_name') }}</label>
                 </FloatLabel>
+                <Message v-if="authStore.errors?.['legal_name']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['legal_name']?.[0]) }}
+                </Message>
             </div>
 
             <!-- Trade Name -->
             <div>
                 <FloatLabel variant="on" class="w-full">
-                    <InputText id="trade_name" v-model="record.trade_name" :disabled="loading.isPageLoading" class="w-full" required />
+                    <InputText
+                        id="trade_name"
+                        v-model="record.trade_name"
+                        :disabled="loading.isPageLoading"
+                        class="w-full"
+                        :invalid="authStore.errors?.['trade_name']?.[0] ? true : false"
+                        @input="() => authStore.clearErrors([`trade_name`])"
+                        @blur="() => onBlurField('trade_name')"
+                    />
                     <label for="trade_name">{{ t('customer.columns.trade_name') }}</label>
                 </FloatLabel>
+                <Message v-if="authStore.errors?.['trade_name']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['trade_name']?.[0]) }}
+                </Message>
             </div>
 
             <!-- RC Number -->
             <div>
                 <FloatLabel variant="on" class="w-full">
-                    <InputText id="rc_number" v-model="record.rc_number" :disabled="loading.isPageLoading" class="w-full" />
+                    <InputText
+                        id="rc_number"
+                        v-model="record.rc_number"
+                        :disabled="loading.isPageLoading"
+                        class="w-full"
+                        :invalid="authStore.errors?.['rc_number']?.[0] ? true : false"
+                        @input="() => authStore.clearErrors([`rc_number`])"
+                        @blur="() => onBlurField('rc_number')"
+                    />
                     <label for="rc_number">{{ t('customer.columns.rc_number') }}</label>
                 </FloatLabel>
+                <Message v-if="authStore.errors?.['rc_number']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['rc_number']?.[0]) }}
+                </Message>
             </div>
 
             <!-- Address -->
             <div>
                 <FloatLabel variant="on" class="w-full">
-                    <InputText id="address" v-model="record.address" :disabled="loading.isPageLoading" class="w-full" />
+                    <InputText
+                        id="address"
+                        v-model="record.address"
+                        :disabled="loading.isPageLoading"
+                        class="w-full"
+                        :invalid="authStore.errors?.['address']?.[0] ? true : false"
+                        @input="() => authStore.clearErrors([`address`])"
+                        @blur="() => onBlurField('address')"
+                    />
                     <label for="address">{{ t('customer.columns.address') }}</label>
                 </FloatLabel>
+                <Message v-if="authStore.errors?.['address']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['address']?.[0]) }}
+                </Message>
             </div>
 
             <!-- NIF -->
             <div>
                 <FloatLabel variant="on" class="w-full">
-                    <InputText id="nif" v-model="record.nif" :disabled="loading.isPageLoading" class="w-full" />
+                    <InputText id="nif" v-model="record.nif" :disabled="loading.isPageLoading" class="w-full" :invalid="authStore.errors?.['nif']?.[0] ? true : false" @input="() => authStore.clearErrors([`nif`])" @blur="() => onBlurField('nif')" />
                     <label for="nif">{{ t('customer.columns.nif') }}</label>
                 </FloatLabel>
+                <Message v-if="authStore.errors?.['nif']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['nif']?.[0]) }}
+                </Message>
             </div>
 
             <!-- NIS -->
             <div>
                 <FloatLabel variant="on" class="w-full">
-                    <InputText id="nis" v-model="record.nis" :disabled="loading.isPageLoading" class="w-full" />
+                    <InputText id="nis" v-model="record.nis" :disabled="loading.isPageLoading" class="w-full" :invalid="authStore.errors?.['nis']?.[0] ? true : false" @input="() => authStore.clearErrors([`nis`])" @blur="() => onBlurField('nis')" />
                     <label for="nis">{{ t('customer.columns.nis') }}</label>
                 </FloatLabel>
+                <Message v-if="authStore.errors?.['nis']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['nis']?.[0]) }}
+                </Message>
             </div>
 
             <!-- RIB -->
             <div>
                 <FloatLabel variant="on" class="w-full">
-                    <InputText id="rib" v-model="record.rib" :disabled="loading.isPageLoading" class="w-full" />
+                    <InputText id="rib" v-model="record.rib" :disabled="loading.isPageLoading" class="w-full" :invalid="authStore.errors?.['rib']?.[0] ? true : false" @input="() => authStore.clearErrors([`rib`])" @blur="() => onBlurField('rib')" />
                     <label for="rib">{{ t('customer.columns.rib') }}</label>
                 </FloatLabel>
+                <Message v-if="authStore.errors?.['rib']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['rib']?.[0]) }}
+                </Message>
             </div>
 
             <!-- Contacts Section -->
@@ -112,7 +188,7 @@ const closeDialog = () => {
                 <Divider align="center" type="dotted">
                     {{ t('contact.labels.contacts') }}
                 </Divider>
-                <Contact v-model="record.contacts" :disabled="loading.isPageLoading" @change="handleContactChange" />
+                <Contact v-model="record.contacts" :disabled="loading.isPageLoading" />
             </div>
         </div>
 

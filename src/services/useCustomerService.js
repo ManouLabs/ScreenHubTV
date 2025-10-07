@@ -21,10 +21,10 @@ export const useCustomerService = {
         }
     },
 
-    async updateUser(userId, updatedData) {
+    async updateCustomer(customerId, updatedData) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
-            const response = await apiClient.put(`/api/admin/users/${userId}`, updatedData);
+            const response = await apiClient.put(`/api/admin/customers/${customerId}`, updatedData);
             return response.data;
         } catch (error) {
             throw error;
