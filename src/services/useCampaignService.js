@@ -1,40 +1,40 @@
-// src/services/useCustomerService.js
+// src/services/useCampaignService.js
 import apiClient from '@/services/axios';
 
-export const useCustomerService = {
-    async getCustomers(params) {
+export const useCampaignService = {
+    async getCampaigns(params) {
         try {
-            const response = await apiClient.post('/api/admin/customers/filter', { params });
+            const response = await apiClient.post('/api/admin/campaigns/filter', { params });
             return response.data;
         } catch (error) {
             throw error;
         }
     },
 
-    async storeCustomer(customerData) {
+    async storeCampaign(campaignData) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
-            const response = await apiClient.post('/api/admin/customers', customerData);
+            const response = await apiClient.post('/api/admin/campaigns', campaignData);
             return response.data;
         } catch (error) {
             throw error;
         }
     },
 
-    async updateCustomer(customerId, updatedData) {
+    async updateCampaign(campaignId, updatedData) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
-            const response = await apiClient.put(`/api/admin/customers/${customerId}`, updatedData);
+            const response = await apiClient.put(`/api/admin/campaigns/${campaignId}`, updatedData);
             return response.data;
         } catch (error) {
             throw error;
         }
     },
 
-    async deleteCustomers(customersIds) {
+    async deleteCampaigns(campaignsIds) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
-            const response = await apiClient.delete('/api/admin/customers', { data: { customers: customersIds } });
+            const response = await apiClient.delete('/api/admin/campaigns', { data: { campaigns: campaignsIds } });
             return response.data;
         } catch (error) {
             throw error;

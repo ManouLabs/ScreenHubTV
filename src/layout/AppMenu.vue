@@ -20,6 +20,12 @@ const model = computed(() => [
                 visible: can('view_dashboard')
             },
             {
+                label: t('navigation.side_bar.campaigns'),
+                icon: 'pi pi-fw pi-megaphone',
+                to: '/admin/campaigns',
+                visible: can('view_campaigns')
+            },
+            {
                 label: t('navigation.side_bar.customers'),
                 icon: 'pi pi-fw pi-folder-open',
                 to: '/admin/customers',

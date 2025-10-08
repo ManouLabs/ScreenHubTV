@@ -4,7 +4,7 @@ import { useDynamicColumns } from '@/composables/useDynamicColumns';
 import { useHighlights } from '@/composables/useHighlights';
 import { useLock } from '@/composables/useLock';
 import dayjs from '@/plugins/dayjs';
-import { useCustomerService } from '@/services/useCustomerService';
+import { useCampaignService } from '@/services/useCampaignService';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { findRecordIndex, formatDate } from '@/utilities/helper';
 import { ACTIONS, useShowToast } from '@/utilities/toast';
@@ -19,21 +19,21 @@ onMounted(() => {
     subscribeToEcho();
 });
 
-// Define default filters configuration for customers
+// Define default filters configuration for campaigns
 const defaultFiltersConfig = {
     id: FilterMatchMode.CONTAINS,
-    legal_name: FilterMatchMode.CONTAINS,
-    trade_name: FilterMatchMode.CONTAINS,
-    address: FilterMatchMode.CONTAINS,
-    created_at: FilterMatchMode.DATE_IS,
-    updated_at: FilterMatchMode.DATE_IS
+    name: FilterMatchMode.CONTAINS,
+    default_media: FilterMatchMode.CONTAINS,
+    start_date: FilterMatchMode.DATE_IS,
+    end_date: FilterMatchMode.DATE_IS,
+    active: FilterMatchMode.EQUALS
 };
 
-// Initialize DataTable composable with customer service
+// Initialize DataTable composable with campaign service
 const { total, rows, records, selectedRecords, recordDataTable, filters, onPage, onSort, onFilter, clearFilter, searchDone, exportCSV, initialize } = useDataTable(
     (params) =>
-        useCustomerService.getCustomers(params).then((data) => ({
-            data: data.customers,
+        useCampaignService.getCampaigns(params).then((data) => ({
+            data: data.campaigns,
             meta: data.meta
         })),
     defaultFiltersConfig
@@ -50,23 +50,24 @@ const { t } = useI18n();
 const { highlights, markHighlight, getRowClass } = useHighlights();
 
 // Use DataTable locking composable (row locking + column freezing)
-const defaultFields = ['legal_name', 'trade_name', 'address', 'created_at', 'updated_at'];
+const defaultFields = ['name', 'start_date', 'end_date', 'default_media', 'active'];
 const { lockedRow, toggleLock, frozenColumns, toggleColumnFrozen } = useLock(defaultFields, records);
 
 const record = ref(null);
+
 const defaultColumns = computed(() =>
     defaultFields.map((field) => ({
         field,
-        header: t(`customer.columns.${field}`)
+        header: t(`campaign.columns.${field}`)
     }))
 );
 
-const { selectedColumns, columnChanged } = useDynamicColumns('customersColumns', defaultFields, 'customer.columns');
+const { selectedColumns, columnChanged } = useDynamicColumns('campaignsColumns', defaultFields, 'campaign.columns');
 
 const subscription = ref(null);
 
 function subscribeToEcho() {
-    subscription.value = Echo.private('data-stream.customer').listen('DataStream', (event) => {
+    subscription.value = Echo.private('data-stream.campaign').listen('DataStream', (event) => {
         handleEchoEvent(event);
     });
 }
@@ -115,26 +116,25 @@ function handleStore(event) {
 function addRecord() {
     authStore.errors = {};
     record.value = {
-        legal_name: null,
-        trade_name: null,
-        rc_number: null,
-        address: null,
-        nif: null,
-        nis: null,
-        rib: null,
-        contacts: [{ civility: null, first_name: '', last_name: '', contactMethods: [{ contact_id: null, type: 'mobile', value: '' }] }]
+        name: null,
+        start_date: null,
+        end_date: null,
+        default_media: null,
+        active: true
     };
     openDialog();
 }
+
 function editRecord(row) {
     authStore.errors = {};
     record.value = row;
     openDialog();
 }
+
 const openDialog = () => {
     dialog.open(formComponent, {
         props: {
-            header: t('common.titles.add', { entity: t('entity.customer') }),
+            header: t('common.titles.add', { entity: t('entity.campaign') }),
             style: {
                 width: '40vw'
             },
@@ -155,13 +155,13 @@ const openDialog = () => {
                     case ACTIONS.CREATE:
                         records.value.unshift(result.data.record);
                         markHighlight(result.data.record.id, 'new');
-                        showToast('success', ACTIONS.CREATE, 'customer', 'tc');
+                        showToast('success', ACTIONS.CREATE, 'campaign', 'tc');
                         break;
                     case ACTIONS.EDIT: {
                         const index = findRecordIndex(records, result.data.record.id);
                         records.value[index] = result.data.record;
                         markHighlight(result.data.record.id, 'updated');
-                        showToast('success', ACTIONS.EDIT, 'customer', 'tc');
+                        showToast('success', ACTIONS.EDIT, 'campaign', 'tc');
                         break;
                     }
                     default:
@@ -172,11 +172,11 @@ const openDialog = () => {
     });
 };
 
-function confirmDeleteRecord(event, customerIds) {
+function confirmDeleteRecord(event, campaignIds) {
     confirm.require({
         modal: true,
         target: event.currentTarget,
-        message: customerIds.length > 1 ? t('common.confirmations.delete_selected.message', { entity: t('entity.customers') }) : t('common.confirmations.delete.message', { entity: t('entity.customer') }),
+        message: campaignIds.length > 1 ? t('common.confirmations.delete_selected.message', { entity: t('entity.campaigns') }) : t('common.confirmations.delete.message', { entity: t('entity.campaign') }),
         icon: 'pi pi-info-circle',
         rejectProps: {
             label: t('common.labels.cancel'),
@@ -185,32 +185,49 @@ function confirmDeleteRecord(event, customerIds) {
             tooltip: t('common.labels.cancel'),
             outlined: true
         },
-
         acceptProps: {
             label: t('common.labels.delete'),
             icon: 'pi pi-trash',
             severity: 'danger'
         },
         accept: () => {
-            useCustomerService
-                .deleteCustomers(customerIds)
+            useCampaignService
+                .deleteCampaigns(campaignIds)
                 .then(() => {
-                    customerIds.forEach((id) => {
+                    campaignIds.forEach((id) => {
                         const index = findRecordIndex(records, id);
                         if (index !== -1) {
                             records.value.splice(index, 1);
                         }
                     });
-                    showToast('success', ACTIONS.DELETE, 'user', 'tc');
+                    showToast('success', ACTIONS.DELETE, 'campaign', 'tc');
                 })
                 .catch((error) => {
                     if (error?.response?.status === 419 || error?.response?.status === 401) {
                         console.error('Session expired, redirecting to login');
                     }
-                    console.error('Error deleting customers');
+                    console.error('Error deleting campaigns');
                 });
         }
     });
+}
+
+function toggleCampaignStatus(campaign) {
+    const newStatus = !campaign.active;
+    useCampaignService
+        .toggleCampaignStatus(campaign.id, newStatus)
+        .then((updatedCampaign) => {
+            const index = findRecordIndex(records, campaign.id);
+            if (index !== -1) {
+                records.value[index] = updatedCampaign;
+                markHighlight(updatedCampaign.id, 'updated');
+            }
+            showToast('success', 'status_updated', 'campaign', 'tc');
+        })
+        .catch((error) => {
+            console.error('Error toggling campaign status:', error);
+            showToast('error', 'status_update_failed', 'campaign', 'tc');
+        });
 }
 
 onUnmounted(() => {
@@ -240,7 +257,7 @@ onUnmounted(() => {
                 :totalRecords="total"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25, 50, 100]"
-                :currentPageReportTemplate="t('common.paggination.showing_to_of_entity', { first: '{first}', last: '{last}', totalRecords: '{totalRecords}', entity: t('entity.customer') })"
+                :currentPageReportTemplate="t('common.paggination.showing_to_of_entity', { first: '{first}', last: '{last}', totalRecords: '{totalRecords}', entity: t('entity.campaign') })"
                 resizableColumns
                 columnResizeMode="fit"
                 reorderableColumns
@@ -263,14 +280,14 @@ onUnmounted(() => {
                 <template #header>
                     <div class="flex items-center">
                         <h2 class="text-xl font-bold min-w-40">
-                            {{ t('common.titles.manage', { entity: t('entity.customer') }) }}
+                            {{ t('common.titles.manage', { entity: t('entity.campaign') }) }}
                         </h2>
                         <Toolbar class="w-full">
                             <template #start>
                                 <div class="flex space-x-2">
                                     <Button
-                                        v-if="authStore.hasPermission('store_customer')"
-                                        v-tooltip.top="t('common.tooltips.add', { entity: t('entity.customer') })"
+                                        v-if="authStore.hasPermission('store_campaign')"
+                                        v-tooltip.top="t('common.tooltips.add', { entity: t('entity.campaign') })"
                                         :label="t('common.labels.new')"
                                         icon="pi pi-plus"
                                         severity="primary"
@@ -278,8 +295,8 @@ onUnmounted(() => {
                                         outlined
                                     />
                                     <Button
-                                        v-if="authStore.hasPermission('delete_customer')"
-                                        v-tooltip.top="t('common.tooltips.delete_selected', { entity: t('entity.customer') })"
+                                        v-if="authStore.hasPermission('delete_campaign')"
+                                        v-tooltip.top="t('common.tooltips.delete_selected', { entity: t('entity.campaign') })"
                                         :label="t('common.labels.delete_selected')"
                                         icon="pi pi-trash"
                                         severity="danger"
@@ -313,8 +330,8 @@ onUnmounted(() => {
                                         </IconField>
                                     </FloatLabel>
                                     <Button
-                                        v-if="authStore.hasPermission('export_customer')"
-                                        v-tooltip.top="t('common.tooltips.export_selection', { entity: t('entity.customer') })"
+                                        v-if="authStore.hasPermission('export_campaign')"
+                                        v-tooltip.top="t('common.tooltips.export_selection', { entity: t('entity.campaign') })"
                                         :label="t('common.labels.export')"
                                         icon="pi pi-upload"
                                         class="min-w-28 ml-2"
@@ -327,40 +344,44 @@ onUnmounted(() => {
                         </Toolbar>
                     </div>
                 </template>
+
                 <Column columnKey="select" selectionMode="multiple" style="width: 3rem" :exportable="false" :reorderableColumn="false" />
+
                 <Column columnKey="id" field="id" header="ID" sortable class="min-w-32">
                     <template #body="{ data }">
                         <DataCell>{{ data.id }}</DataCell>
                     </template>
                 </Column>
+
+                <!-- Name Column -->
                 <Column
                     :showClearButton="false"
                     :showApplyButton="false"
                     :showFilterMatchModes="false"
                     :showFilterOperator="false"
-                    columnKey="legal_name"
-                    field="legal_name"
-                    :frozen="frozenColumns.legal_name"
-                    v-if="selectedColumns.some((column) => column.field === 'legal_name')"
+                    columnKey="name"
+                    field="name"
+                    :frozen="frozenColumns.name"
+                    v-if="selectedColumns.some((column) => column.field === 'name')"
                     sortable
-                    class="min-w-32"
+                    class="min-w-48"
                 >
                     <template #header>
                         <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.legal_name }">{{ t('customer.columns.legal_name') }}</div>
+                            <div :class="{ 'font-bold': frozenColumns.name }">{{ t('campaign.columns.name') }}</div>
                             <Button
-                                v-tooltip.top="frozenColumns.legal_name ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.legal_name ? 'pi pi-lock' : 'pi pi-lock-open'"
+                                v-tooltip.top="frozenColumns.name ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
+                                :icon="frozenColumns.name ? 'pi pi-lock' : 'pi pi-lock-open'"
                                 text
-                                @click="toggleColumnFrozen('legal_name')"
+                                @click="toggleColumnFrozen('name')"
                                 severity="contrast"
                             />
                         </div>
                     </template>
                     <template #body="{ data }">
                         <DataCell>
-                            <div class="flex items-center gap-2" :class="{ 'font-bold': frozenColumns.legal_name || highlights[data.id] }">
-                                <span>{{ data.legal_name }}</span>
+                            <div class="flex items-center gap-2" :class="{ 'font-bold': frozenColumns.name || highlights[data.id] }">
+                                <span>{{ data.name }}</span>
                                 <Tag v-if="highlights[data.id] === 'new'" value="NEW" severity="success" rounded size="small" />
                                 <Tag v-else-if="highlights[data.id] === 'updated'" value="UPDATED" severity="info" rounded size="small" />
                             </div>
@@ -371,122 +392,47 @@ onUnmounted(() => {
                             <InputText v-model="filterModel.value" size="small" />
                             <InputGroupAddon>
                                 <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear', 'filter')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
+                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
                             </InputGroupAddon>
                         </InputGroup>
                     </template>
                 </Column>
-                <Column
-                    :showClearButton="false"
-                    :showApplyButton="false"
-                    :showFilterMatchModes="false"
-                    :showFilterOperator="false"
-                    columnKey="trade_name"
-                    field="trade_name"
-                    :frozen="frozenColumns.trade_name"
-                    v-if="selectedColumns.some((column) => column.field === 'trade_name')"
-                    sortable
-                    class="min-w-32"
-                >
-                    <template #header>
-                        <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.trade_name }">{{ t('customer.columns.trade_name') }}</div>
-                            <Button
-                                v-tooltip.top="frozenColumns.trade_name ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.trade_name ? 'pi pi-lock' : 'pi pi-lock-open'"
-                                text
-                                @click="toggleColumnFrozen('trade_name')"
-                                severity="contrast"
-                            />
-                        </div>
-                    </template>
-                    <template #body="{ data }">
-                        <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.trade_name }">{{ data.trade_name }}</div></DataCell
-                        >
-                    </template>
-                    <template #filter="{ filterModel, applyFilter }">
-                        <InputGroup>
-                            <InputText v-model="filterModel.value" size="small" />
-                            <InputGroupAddon>
-                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear', 'filter')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </template>
-                </Column>
-                <Column
-                    :showClearButton="false"
-                    :showApplyButton="false"
-                    :showFilterMatchModes="false"
-                    :showFilterOperator="false"
-                    columnKey="address"
-                    field="address"
-                    :frozen="frozenColumns.address"
-                    v-if="selectedColumns.some((column) => column.field === 'address')"
-                    sortable
-                    class="min-w-32"
-                >
-                    <template #header>
-                        <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.address }">{{ t('customer.columns.address') }}</div>
-                            <Button
-                                v-tooltip.top="frozenColumns.address ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.address ? 'pi pi-lock' : 'pi pi-lock-open'"
-                                text
-                                @click="toggleColumnFrozen('address')"
-                                severity="contrast"
-                            />
-                        </div>
-                    </template>
-                    <template #body="{ data }">
-                        <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.address }">{{ data.address }}</div></DataCell
-                        >
-                    </template>
-                    <template #filter="{ filterModel, applyFilter }">
-                        <InputGroup>
-                            <InputText v-model="filterModel.value" size="small" />
-                            <InputGroupAddon>
-                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear', 'filter')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </template>
-                </Column>
+
+                <!-- Start Date Column -->
                 <Column
                     :showClearButton="false"
                     :showApplyButton="false"
                     :showFilterMatchModes="false"
                     :showFilterOperator="false"
                     dataType="date"
-                    columnKey="created_at"
-                    field="created_at"
-                    :frozen="frozenColumns.created_at"
-                    v-if="selectedColumns.some((column) => column.field === 'created_at')"
+                    columnKey="start_date"
+                    field="start_date"
+                    :frozen="frozenColumns.start_date"
+                    v-if="selectedColumns.some((column) => column.field === 'start_date')"
                     sortable
                     class="min-w-40"
                 >
                     <template #header>
                         <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.created_at }">{{ t('user.columns.created_at') }}</div>
+                            <div :class="{ 'font-bold': frozenColumns.start_date }">{{ t('campaign.columns.start_date') }}</div>
                             <Button
-                                v-tooltip.top="frozenColumns.created_at ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.created_at ? 'pi pi-lock' : 'pi pi-lock-open'"
+                                v-tooltip.top="frozenColumns.start_date ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
+                                :icon="frozenColumns.start_date ? 'pi pi-lock' : 'pi pi-lock-open'"
                                 text
-                                @click="toggleColumnFrozen('created_at')"
+                                @click="toggleColumnFrozen('start_date')"
                                 severity="contrast"
                             />
                         </div>
                     </template>
                     <template #body="{ data }">
                         <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.created_at }">{{ dayjs(data.created_at).format('l') }}</div>
+                            <div :class="{ 'font-bold': frozenColumns.start_date }">
+                                {{ data.start_date ? dayjs(data.start_date).format('L') : '-' }}
+                            </div>
                         </DataCell>
                     </template>
                     <template #filter="{ filterModel, applyFilter }">
                         <div class="flex flex-col gap-2">
-                            <!-- Match Mode Selector -->
                             <Dropdown
                                 v-model="filterModel.matchMode"
                                 :options="[
@@ -500,8 +446,6 @@ onUnmounted(() => {
                                 class="w-full"
                                 placeholder="Filter Mode"
                             />
-
-                            <!-- Date Input + Apply/Clear -->
                             <InputGroup>
                                 <DatePicker v-model="filterModel.value" dateFormat="yy-mm-dd" :showClear="false" :manualInput="false" @dateSelect="(e) => formatDate(e, filterModel)" />
                                 <InputGroupAddon>
@@ -524,34 +468,38 @@ onUnmounted(() => {
                         </div>
                     </template>
                 </Column>
+
+                <!-- End Date Column -->
                 <Column
                     :showClearButton="false"
                     :showApplyButton="false"
                     :showFilterMatchModes="false"
                     :showFilterOperator="false"
                     dataType="date"
-                    columnKey="updated_at"
-                    field="updated_at"
-                    :frozen="frozenColumns.updated_at"
-                    v-if="selectedColumns.some((column) => column.field === 'updated_at')"
+                    columnKey="end_date"
+                    field="end_date"
+                    :frozen="frozenColumns.end_date"
+                    v-if="selectedColumns.some((column) => column.field === 'end_date')"
                     sortable
                     class="min-w-40"
                 >
                     <template #header>
                         <div class="flex justify-between w-full items-center">
-                            <div :class="{ 'font-bold': frozenColumns.updated_at }">{{ t('user.columns.updated_at') }}</div>
+                            <div :class="{ 'font-bold': frozenColumns.end_date }">{{ t('campaign.columns.end_date') }}</div>
                             <Button
-                                v-tooltip.top="frozenColumns.updated_at ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
-                                :icon="frozenColumns.updated_at ? 'pi pi-lock' : 'pi pi-lock-open'"
+                                v-tooltip.top="frozenColumns.end_date ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
+                                :icon="frozenColumns.end_date ? 'pi pi-lock' : 'pi pi-lock-open'"
                                 text
-                                @click="toggleColumnFrozen('updated_at')"
+                                @click="toggleColumnFrozen('end_date')"
                                 severity="contrast"
                             />
                         </div>
                     </template>
                     <template #body="{ data }">
                         <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.updated_at }">{{ dayjs(data.updated_at).format('l') }}</div>
+                            <div :class="{ 'font-bold': frozenColumns.end_date }">
+                                {{ data.end_date ? dayjs(data.end_date).format('L') : '-' }}
+                            </div>
                         </DataCell>
                     </template>
                     <template #filter="{ filterModel, applyFilter }">
@@ -569,9 +517,8 @@ onUnmounted(() => {
                                 class="w-full"
                                 placeholder="Filter Mode"
                             />
-
                             <InputGroup>
-                                <DatePicker v-model="filterModel.value" :showClear="false" @dateSelect="(e) => formatDate(e, filterModel)" />
+                                <DatePicker v-model="filterModel.value" dateFormat="yy-mm-dd" :showClear="false" :manualInput="false" @dateSelect="(e) => formatDate(e, filterModel)" />
                                 <InputGroupAddon>
                                     <Button size="small" icon="pi pi-check" severity="primary" @click="applyFilter()" />
                                     <Button
@@ -592,24 +539,131 @@ onUnmounted(() => {
                         </div>
                     </template>
                 </Column>
+
+                <!-- Default Media Column -->
+                <Column
+                    :showClearButton="false"
+                    :showApplyButton="false"
+                    :showFilterMatchModes="false"
+                    :showFilterOperator="false"
+                    columnKey="default_media"
+                    field="default_media"
+                    :frozen="frozenColumns.default_media"
+                    v-if="selectedColumns.some((column) => column.field === 'default_media')"
+                    sortable
+                    class="min-w-32"
+                >
+                    <template #header>
+                        <div class="flex justify-between w-full items-center">
+                            <div :class="{ 'font-bold': frozenColumns.default_media }">{{ t('campaign.columns.default_media') }}</div>
+                            <Button
+                                v-tooltip.top="frozenColumns.default_media ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
+                                :icon="frozenColumns.default_media ? 'pi pi-lock' : 'pi pi-lock-open'"
+                                text
+                                @click="toggleColumnFrozen('default_media')"
+                                severity="contrast"
+                            />
+                        </div>
+                    </template>
+                    <template #body="{ data }">
+                        <DataCell>
+                            <div :class="{ 'font-bold': frozenColumns.default_media }">{{ data.default_media || '-' }}</div>
+                        </DataCell>
+                    </template>
+                    <template #filter="{ filterModel, applyFilter }">
+                        <InputGroup>
+                            <InputText v-model="filterModel.value" size="small" />
+                            <InputGroupAddon>
+                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
+                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </template>
+                </Column>
+
+                <!-- Active Status Column -->
+                <Column
+                    :showClearButton="false"
+                    :showApplyButton="false"
+                    :showFilterMatchModes="false"
+                    :showFilterOperator="false"
+                    columnKey="active"
+                    field="active"
+                    :frozen="frozenColumns.active"
+                    v-if="selectedColumns.some((column) => column.field === 'active')"
+                    sortable
+                    class="min-w-32"
+                >
+                    <template #header>
+                        <div class="flex justify-between w-full items-center">
+                            <div :class="{ 'font-bold': frozenColumns.active }">{{ t('campaign.columns.active') }}</div>
+                            <Button
+                                v-tooltip.top="frozenColumns.active ? t('common.tooltips.unlock_column') : t('common.tooltips.lock_column')"
+                                :icon="frozenColumns.active ? 'pi pi-lock' : 'pi pi-lock-open'"
+                                text
+                                @click="toggleColumnFrozen('active')"
+                                severity="contrast"
+                            />
+                        </div>
+                    </template>
+                    <template #body="{ data }">
+                        <DataCell>
+                            <div class="flex items-center gap-2" :class="{ 'font-bold': frozenColumns.active }">
+                                <Tag :value="data.active ? t('common.labels.active') : t('common.labels.inactive')" :severity="data.active ? 'success' : 'danger'" rounded size="small" />
+                                <Button
+                                    v-if="authStore.hasPermission('update_campaign')"
+                                    :icon="data.active ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                    :severity="data.active ? 'danger' : 'success'"
+                                    size="small"
+                                    text
+                                    rounded
+                                    @click="toggleCampaignStatus(data)"
+                                    v-tooltip.top="data.active ? t('common.tooltips.deactivate') : t('common.tooltips.activate')"
+                                />
+                            </div>
+                        </DataCell>
+                    </template>
+                    <template #filter="{ filterModel, applyFilter }">
+                        <InputGroup>
+                            <Dropdown
+                                v-model="filterModel.value"
+                                :options="[
+                                    { label: t('common.labels.active'), value: true },
+                                    { label: t('common.labels.inactive'), value: false }
+                                ]"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Select Status"
+                                class="w-full"
+                                size="small"
+                            />
+                            <InputGroupAddon>
+                                <Button size="small" icon="pi pi-check" severity="primary" @click="applyFilter()" />
+                                <Button :disabled="filterModel.value === null" size="small" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </template>
+                </Column>
+
+                <!-- Actions Column -->
                 <Column columnKey="actions" :exportable="false" style="min-width: 12rem" :header="t('common.columns.actions')">
                     <template #body="{ data, frozenRow, index }">
                         <DataCell>
                             <div class="flex justify-between">
                                 <div class="flex space-x-2">
                                     <Button
-                                        v-if="authStore.hasPermission('view_customer')"
-                                        v-tooltip.top="t('common.tooltips.view', { entity: t('entity.customer') })"
+                                        v-if="authStore.hasPermission('view_campaign')"
+                                        v-tooltip.top="t('common.tooltips.view', { entity: t('entity.campaign') })"
                                         icon="pi pi-eye"
                                         outlined
                                         rounded
                                         @click="editRecord(data)"
                                         severity="secondary"
                                     />
-                                    <Button v-if="authStore.hasPermission('update_customer')" v-tooltip.top="t('common.tooltips.edit', { entity: t('entity.customer') })" icon="pi pi-pencil" outlined rounded @click="editRecord(data)" />
+                                    <Button v-if="authStore.hasPermission('update_campaign')" v-tooltip.top="t('common.tooltips.edit', { entity: t('entity.campaign') })" icon="pi pi-pencil" outlined rounded @click="editRecord(data)" />
                                     <Button
-                                        v-if="authStore.hasPermission('delete_customer')"
-                                        v-tooltip.top="$t('common.tooltips.delete', { entity: t('entity.customer') })"
+                                        v-if="authStore.hasPermission('delete_campaign')"
+                                        v-tooltip.top="t('common.tooltips.delete', { entity: t('entity.campaign') })"
                                         icon="pi pi-trash"
                                         outlined
                                         rounded

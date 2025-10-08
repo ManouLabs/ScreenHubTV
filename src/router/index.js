@@ -17,6 +17,12 @@ const adminRoutes = [
         meta: { requiresAuth: true, requiresPermission: 'view_customers' }
     },
     {
+        path: 'campaigns',
+        name: 'campaigns',
+        component: () => import('@/views/admin/campaigns/Campaigns.vue'),
+        meta: { requiresAuth: true, requiresPermission: 'view_campaigns' }
+    },
+    {
         path: 'users',
         name: 'users',
         component: () => import('@/views/admin/users/Users.vue'),

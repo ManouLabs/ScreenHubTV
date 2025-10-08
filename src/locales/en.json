@@ -6,6 +6,8 @@
         "roles": "Roles",
         "customer": "Customer",
         "customers": "Customers",
+        "campaign": "Campaign",
+        "campaigns": "Campaigns",
         "my_account": "Account",
         "my_informations": "Account Information"
     },
@@ -85,7 +87,9 @@
             "days_ago": "{count} Days ago",
             "weeks_ago": "{count} weeks ago",
             "months_ago": "{count} months ago",
-            "warning": "Warning"
+            "warning": "Warning",
+            "active": "Active",
+            "inactive": "Inactive"
         },
         "tooltips": {
             "edit": "Edit {entity}",
@@ -98,7 +102,9 @@
             "unlock_row": "Unlock this row",
             "lock_column": "Lock this column",
             "unlock_column": "Unlock this column",
-            "clear_all_filters": "Clear all filters"
+            "clear_all_filters": "Clear all filters",
+            "activate": "Activate",
+            "deactivate": "Deactivate"
         },
         "columns": {
             "id": "ID",
@@ -178,6 +184,7 @@
             "home": "Home",
             "dashboard": "Dashboard",
             "customers": "Customers",
+            "campaigns": "Campaigns",
             "user": "User",
             "users": "Users",
             "roles": "Roles"
@@ -235,6 +242,28 @@
             "rib": "RIB",
             "created_at": "Created At",
             "updated_at": "Updated At"
+        }
+    },
+    "campaign": {
+        "columns": {
+            "name": "Campaign Name",
+            "start_date": "Start Date",
+            "end_date": "End Date",
+            "default_media": "Default Media",
+            "active": "Status"
+        },
+        "fields": {
+            "name": "Campaign Name",
+            "start_date": "Start Date",
+            "end_date": "End Date",
+            "default_media": "Default Media",
+            "active": "Active"
+        },
+        "labels": {
+            "status_active": "Active",
+            "status_inactive": "Inactive",
+            "duration": "Duration",
+            "campaign_period": "Campaign Period"
         }
     },
     "contact": {
