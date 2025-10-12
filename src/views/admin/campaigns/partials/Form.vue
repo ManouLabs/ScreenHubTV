@@ -12,20 +12,16 @@ const authStore = useAuthStore();
 const { t } = useI18n();
 const loading = useLoading();
 const record = ref({});
+const uploadRef = ref(null);
+const removeDefaultMedia = ref(false);
 const dialogRef = inject('dialogRef');
 const action = ref();
-
-// Use external campaign schema
 const schema = campaignSchema;
-
-// Manual validation function using reusable helper
 const validateForm = () => {
     const { ok, errors } = validate(schema, record.value);
     authStore.errors = ok ? {} : errors;
     return ok;
 };
-
-// Field-level validation on blur
 const onBlurField = (path) => {
     const { ok, errors } = validateField(schema, record.value, path);
     if (ok) {
@@ -34,18 +30,61 @@ const onBlurField = (path) => {
         authStore.errors = { ...authStore.errors, ...errors };
     }
 };
-
-// Handle form submission
 const handleSubmit = async () => {
     if (!validateForm()) {
         return;
     }
 
     loading.startPageLoading();
+    const campaignData = { ...record.value };
+    const formatDateYMD = (v) => {
+        if (!v) return null;
+        if (v instanceof Date) {
+            const year = v.getFullYear();
+            const month = String(v.getMonth() + 1).padStart(2, '0');
+            const day = String(v.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        if (typeof v === 'string') return v;
+        return null;
+    };
 
-    const serviceAction = action.value === ACTIONS.CREATE ? useCampaignService.storeCampaign : (campaignData) => useCampaignService.updateCampaign(record.value.id, campaignData);
+    campaignData.start_date = formatDateYMD(campaignData.start_date);
+    campaignData.end_date = formatDateYMD(campaignData.end_date);
+    delete campaignData.__original_start_date;
+    const selected = uploadRef.value?.getSelectedFiles?.() || [];
+    const file = Array.isArray(selected) ? selected[0] : selected;
+    const hasFile = file instanceof File;
 
-    serviceAction(record.value)
+    let submitData;
+    if (hasFile) {
+        submitData = new FormData();
+        Object.keys(campaignData).forEach((key) => {
+            const value = campaignData[key];
+            if (key !== 'default_media' && value !== null && value !== undefined) {
+                if (typeof value === 'boolean') {
+                    submitData.append(key, value ? '1' : '0');
+                } else {
+                    submitData.append(key, value);
+                }
+            }
+        });
+        submitData.append('default_media', file);
+        removeDefaultMedia.value = false;
+    } else {
+        delete campaignData.default_media;
+        if (removeDefaultMedia.value) {
+            campaignData._remove_default_media = true;
+        }
+        if (typeof campaignData.active === 'boolean') {
+            campaignData.active = campaignData.active;
+        }
+        submitData = campaignData;
+    }
+
+    const serviceAction = action.value === ACTIONS.CREATE ? useCampaignService.storeCampaign : (data) => useCampaignService.updateCampaign(record.value.id, data);
+
+    serviceAction(submitData)
         .then((response) => {
             dialogRef.value.close({ record: response.data, action: action.value });
         })
@@ -56,46 +95,69 @@ const handleSubmit = async () => {
             loading.stopPageLoading();
         });
 };
-
-// Handle form cancellation
 const handleCancel = () => {
     dialogRef.value.close();
 };
 
 onMounted(() => {
-    record.value = dialogRef.value.data.record;
+    const original = dialogRef.value.data.record;
+    try {
+        record.value = structuredClone ? structuredClone(original) : JSON.parse(JSON.stringify(original));
+    } catch {
+        record.value = JSON.parse(JSON.stringify(original));
+    }
     action.value = dialogRef.value.data.action;
+    console.log('Record action:', record.value);
+    if (!('default_media' in record.value)) {
+        record.value.default_media = null;
+    }
+    const toDate = (v) => {
+        if (!v) return null;
+        if (v instanceof Date) return v;
+        if (typeof v === 'string') {
+            const d = new Date(v);
+            return isNaN(d.getTime()) ? null : d;
+        }
+        return null;
+    };
+    record.value.start_date = toDate(record.value.start_date) ?? record.value.start_date;
+    record.value.end_date = toDate(record.value.end_date) ?? record.value.end_date;
+    if (action.value !== ACTIONS.CREATE) {
+        record.value.__original_start_date = record.value.start_date;
+    }
 });
+const handleUploadSelect = () => {
+    removeDefaultMedia.value = false;
+};
+const handleUploadRemove = (e) => {
+    if (e && e.reason === 'existing') {
+        removeDefaultMedia.value = true;
+    }
+};
 </script>
 
 <template>
     <div class="p-6">
         <form @submit.prevent="handleSubmit" class="space-y-6">
-            <!-- Campaign Name -->
             <div class="field">
                 <FloatLabel>
                     <InputText id="name" v-model="record.name" :class="{ 'p-invalid': authStore.errors?.name }" class="w-full" :maxlength="255" required @blur="onBlurField('name')" />
                     <label for="name">{{ t('campaign.fields.name') }} *</label>
                 </FloatLabel>
-                <small v-if="authStore.errors?.name" class="p-error">
-                    {{ authStore.errors?.name?.[0] }}
-                </small>
+                <Message v-if="authStore.errors?.['name']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['name']?.[0]) }}
+                </Message>
             </div>
-
-            <!-- Date Range -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Start Date -->
                 <div class="field">
                     <FloatLabel>
                         <DatePicker id="start_date" v-model="record.start_date" :class="{ 'p-invalid': authStore.errors?.start_date }" class="w-full" dateFormat="yy-mm-dd" :showIcon="true" :showClear="true" @blur="onBlurField('start_date')" />
-                        <label for="start_date">{{ t('campaign.fields.start_date') }}</label>
+                        <label for="start_date">{{ t('campaign.fields.start_date') }} *</label>
                     </FloatLabel>
-                    <small v-if="authStore.errors?.start_date" class="p-error">
-                        {{ authStore.errors?.start_date?.[0] }}
-                    </small>
+                    <Message v-if="authStore.errors?.['start_date']?.[0]" severity="error" size="small">
+                        {{ t(authStore.errors?.['start_date']?.[0]) }}
+                    </Message>
                 </div>
-
-                <!-- End Date -->
                 <div class="field">
                     <FloatLabel>
                         <DatePicker
@@ -109,26 +171,29 @@ onMounted(() => {
                             :minDate="record.start_date"
                             @blur="onBlurField('end_date')"
                         />
-                        <label for="end_date">{{ t('campaign.fields.end_date') }}</label>
+                        <label for="end_date">{{ t('campaign.fields.end_date') }} *</label>
                     </FloatLabel>
-                    <small v-if="authStore.errors?.end_date" class="p-error">
-                        {{ authStore.errors?.end_date?.[0] }}
-                    </small>
+                    <Message v-if="authStore.errors?.['end_date']?.[0]" severity="error" size="small">
+                        {{ t(authStore.errors?.['end_date']?.[0]) }}
+                    </Message>
                 </div>
             </div>
-
-            <!-- Default Media -->
-            <div class="field">
-                <FloatLabel>
-                    <InputText id="default_media" v-model="record.default_media" :class="{ 'p-invalid': authStore.errors?.default_media }" class="w-full" :maxlength="255" @blur="onBlurField('default_media')" />
-                    <label for="default_media">{{ t('campaign.fields.default_media') }}</label>
-                </FloatLabel>
-                <small v-if="authStore.errors?.default_media" class="p-error">
-                    {{ authStore.errors?.default_media?.[0] }}
-                </small>
-            </div>
-
-            <!-- Active Status -->
+            <FileUploadField
+                ref="uploadRef"
+                :modelValue="record.default_media"
+                :label="t('campaign.fields.default_media')"
+                accept=".jpg,.jpeg,.png,.bmp,.gif,.webp,.mp4,.avi,.mov,.wmv,.flv,.mkv,.webm"
+                :multiple="false"
+                :maxFileSize="1073741824"
+                :error="authStore.errors?.['default_media']?.[0] ? t(authStore.errors?.['default_media']?.[0]) : null"
+                :placeholder="t('campaign.fields.media_files_placeholder')"
+                uploadMode="advanced"
+                :previewWidth="120"
+                :emitUpdate="false"
+                @select="handleUploadSelect"
+                @remove="handleUploadRemove"
+                @blur="onBlurField('default_media')"
+            />
             <div class="field">
                 <div class="flex items-center gap-3">
                     <ToggleSwitch id="active" v-model="record.active" :class="{ 'p-invalid': authStore.errors?.active }" @change="onBlurField('active')" />
@@ -136,15 +201,13 @@ onMounted(() => {
                         {{ t('campaign.fields.active') }}
                     </label>
                 </div>
-                <small v-if="authStore.errors?.active" class="p-error">
-                    {{ authStore.errors?.active?.[0] }}
-                </small>
+                <Message v-if="authStore.errors?.['active']?.[0]" severity="error" size="small">
+                    {{ t(authStore.errors?.['active']?.[0]) }}
+                </Message>
             </div>
-
-            <!-- Form Actions -->
-            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                <Button type="button" :label="t('common.labels.cancel')" icon="pi pi-times" severity="secondary" outlined @click="handleCancel" :disabled="loading.isPageLoading" />
-                <Button type="submit" :label="action === ACTIONS.CREATE ? t('common.labels.create') : t('common.labels.update')" :icon="action === ACTIONS.CREATE ? 'pi pi-plus' : 'pi pi-pencil'" severity="primary" :loading="loading.isPageLoading" />
+            <div class="flex justify-end gap-2 mt-4">
+                <Button :label="t('common.labels.cancel')" icon="pi pi-times" text @click="handleCancel" />
+                <Button :label="t('common.labels.save')" icon="pi pi-check" type="submit" :loading="loading.isPageLoading" />
             </div>
         </form>
     </div>

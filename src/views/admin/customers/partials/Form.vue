@@ -86,7 +86,7 @@ onMounted(() => {
                         @input="() => authStore.clearErrors([`legal_name`])"
                         @blur="() => onBlurField('legal_name')"
                     />
-                    <label for="legal_name">{{ t('customer.columns.legal_name') }}</label>
+                    <label for="legal_name">{{ t('customer.columns.legal_name') }} *</label>
                 </FloatLabel>
                 <Message v-if="authStore.errors?.['legal_name']?.[0]" severity="error" size="small">
                     {{ t(authStore.errors?.['legal_name']?.[0]) }}
@@ -105,7 +105,7 @@ onMounted(() => {
                         @input="() => authStore.clearErrors([`trade_name`])"
                         @blur="() => onBlurField('trade_name')"
                     />
-                    <label for="trade_name">{{ t('customer.columns.trade_name') }}</label>
+                    <label for="trade_name">{{ t('customer.columns.trade_name') }} *</label>
                 </FloatLabel>
                 <Message v-if="authStore.errors?.['trade_name']?.[0]" severity="error" size="small">
                     {{ t(authStore.errors?.['trade_name']?.[0]) }}
@@ -185,9 +185,7 @@ onMounted(() => {
 
             <!-- Contacts Section -->
             <div class="col-span-2">
-                <Divider align="center" type="dotted">
-                    {{ t('contact.labels.contacts') }}
-                </Divider>
+                <Divider align="center" type="dotted"> {{ t('contact.labels.contacts') }} * </Divider>
                 <Contact v-model="record.contacts" :disabled="loading.isPageLoading" />
             </div>
         </div>

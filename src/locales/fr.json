@@ -91,6 +91,17 @@
                 "message": "Êtes-vous sûr de vouloir supprimer les {entity} sélectionnés ?"
             }
         },
+        "file_upload": {
+            "select_file": "Choisir un fichier",
+            "select_files": "Choisir des fichiers",
+            "choose": "Choisir",
+            "clear": "Effacer",
+            "file_selected": "Fichier sélectionné",
+            "files_selected": "fichiers sélectionnés",
+            "drag_drop_hint": "Glissez-déposez les fichiers ici ou cliquez pour parcourir",
+            "max_size": "Taille max",
+            "accepted_formats": "Formats acceptés"
+        },
         "toasts": {
             "create": {
                 "summary": "{entity} créé(e)",
@@ -339,5 +350,30 @@
         "aria.zoomOut": "Réduire",
         "aria.rotateRight": "Rotation droite",
         "aria.rotateLeft": "Rotation gauche"
+    },
+    "campaign": {
+        "columns": {
+            "name": "Nom de campagne",
+            "start_date": "Date de début",
+            "end_date": "Date de fin",
+            "default_media": "Média par défaut",
+            "media_files": "Fichiers média",
+            "active": "Statut"
+        },
+        "fields": {
+            "name": "Nom de campagne",
+            "start_date": "Date de début",
+            "end_date": "Date de fin",
+            "default_media": "Média par défaut",
+            "media_files": "Fichiers média",
+            "media_files_placeholder": "Choisissez des images et vidéos pour votre campagne",
+            "active": "Actif"
+        },
+        "labels": {
+            "status_active": "Actif",
+            "status_inactive": "Inactif",
+            "duration": "Durée",
+            "campaign_period": "Période de campagne"
+        }
     }
 }

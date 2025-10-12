@@ -48,6 +48,17 @@
             "image_type": "Image must be in .jpg, .jpeg, .png or .webp format",
             "max_image_size": "Max image size is {size}."
         },
+        "file_upload": {
+            "select_file": "Choose File",
+            "select_files": "Choose Files",
+            "choose": "Choose",
+            "clear": "Clear",
+            "file_selected": "File selected",
+            "files_selected": "files selected",
+            "drag_drop_hint": "Drag and drop files here or click to browse",
+            "max_size": "Max size",
+            "accepted_formats": "Accepted formats"
+        },
         "titles": {
             "manage": "Manage {entity}",
             "add": "Add new {entity}",
@@ -250,6 +261,7 @@
             "start_date": "Start Date",
             "end_date": "End Date",
             "default_media": "Default Media",
+            "media_files": "Media Files",
             "active": "Status"
         },
         "fields": {
@@ -257,6 +269,8 @@
             "start_date": "Start Date",
             "end_date": "End Date",
             "default_media": "Default Media",
+            "media_files": "Media Files",
+            "media_files_placeholder": "Choose default image or video for your campaign",
             "active": "Active"
         },
         "labels": {

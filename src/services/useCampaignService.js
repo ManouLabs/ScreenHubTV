@@ -31,6 +31,16 @@ export const useCampaignService = {
         }
     },
 
+    async toggleCampaignActive(campaignId) {
+        try {
+            await apiClient.get('/sanctum/csrf-cookie');
+            const response = await apiClient.patch(`/api/admin/campaigns/${campaignId}/toggle-active`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     async deleteCampaigns(campaignsIds) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');

@@ -11,7 +11,16 @@ const ACTIONS = {
     STORE: 'store',
     EDIT: 'edit',
     CREATE: 'create',
-    SEARCH: 'search'
+    SEARCH: 'search',
+    UPLOAD: 'upload',
+    DOWNLOAD: 'download',
+    ACTIVATE: 'activate',
+    DEACTIVATE: 'deactivate',
+    RESTORE: 'restore',
+    PURGE: 'purge',
+    SEND: 'send',
+    SAVE: 'save',
+    TOGGLE: 'toggle'
 };
 
 function useShowToast() {

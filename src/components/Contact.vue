@@ -157,7 +157,7 @@ const validateContactMethodValue = (contactIndex, methodIndex) => {
                                 @input="() => authStore.clearErrors([`contacts.${contactIndex}.civility`])"
                                 @blur="() => validateContactField(contactIndex, 'civility')"
                             />
-                            <label :for="`civility_${contactIndex}`">{{ t('contact.labels.civility') }}</label>
+                            <label :for="`civility_${contactIndex}`">{{ t('contact.labels.civility') }} *</label>
                         </FloatLabel>
                         <Message v-if="authStore.errors?.[`contacts.${contactIndex}.civility`]?.[0]" severity="error" size="small">
                             {{ t(authStore.errors?.[`contacts.${contactIndex}.civility`]?.[0]) }}
@@ -176,7 +176,7 @@ const validateContactMethodValue = (contactIndex, methodIndex) => {
                                 @input="() => authStore.clearErrors([`contacts.${contactIndex}.first_name`])"
                                 @blur="() => validateContactField(contactIndex, 'first_name')"
                             />
-                            <label :for="`firstName_${contactIndex}`">{{ t('contact.labels.first_name') }}</label>
+                            <label :for="`firstName_${contactIndex}`">{{ t('contact.labels.first_name') }} *</label>
                         </FloatLabel>
                         <Message v-if="authStore.errors?.[`contacts.${contactIndex}.first_name`]?.[0]" severity="error" size="small">
                             {{ t(authStore.errors?.[`contacts.${contactIndex}.first_name`]?.[0]) }}
@@ -195,7 +195,7 @@ const validateContactMethodValue = (contactIndex, methodIndex) => {
                                 @input="() => authStore.clearErrors([`contacts.${contactIndex}.last_name`])"
                                 @blur="() => validateContactField(contactIndex, 'last_name')"
                             />
-                            <label :for="`lastName_${contactIndex}`">{{ t('contact.labels.last_name') }}</label>
+                            <label :for="`lastName_${contactIndex}`">{{ t('contact.labels.last_name') }} *</label>
                         </FloatLabel>
                         <Message v-if="authStore.errors?.[`contacts.${contactIndex}.last_name`]?.[0]" severity="error" size="small">
                             {{ t(authStore.errors?.[`contacts.${contactIndex}.last_name`]?.[0]) }}
@@ -233,7 +233,7 @@ const validateContactMethodValue = (contactIndex, methodIndex) => {
                                                     @input="() => authStore.clearErrors([`contacts.${contactIndex}.contactMethods.${methodIndex}.type`])"
                                                     @blur="() => validateContactMethodValue(contactIndex, methodIndex)"
                                                 />
-                                                <label :for="`contact_method_type_${contactIndex}_${methodIndex}`">{{ t('contact.labels.type') }}</label>
+                                                <label :for="`contact_method_type_${contactIndex}_${methodIndex}`">{{ t('contact.labels.type') }} *</label>
                                             </FloatLabel>
                                             <Message v-if="authStore.errors?.[`contacts.${contactIndex}.contactMethods.${methodIndex}.type`]?.[0]" severity="error" size="small">
                                                 {{ t(authStore.errors?.[`contacts.${contactIndex}.contactMethods.${methodIndex}.type`]?.[0]) }}

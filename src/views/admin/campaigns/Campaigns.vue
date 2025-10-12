@@ -7,6 +7,7 @@ import dayjs from '@/plugins/dayjs';
 import { useCampaignService } from '@/services/useCampaignService';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { findRecordIndex, formatDate } from '@/utilities/helper';
+import { getMediaName, getMediaUrl, isImageMedia, isVideoMedia } from '@/utilities/media';
 import { ACTIONS, useShowToast } from '@/utilities/toast';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useConfirm } from 'primevue/useconfirm';
@@ -23,7 +24,6 @@ onMounted(() => {
 const defaultFiltersConfig = {
     id: FilterMatchMode.CONTAINS,
     name: FilterMatchMode.CONTAINS,
-    default_media: FilterMatchMode.CONTAINS,
     start_date: FilterMatchMode.DATE_IS,
     end_date: FilterMatchMode.DATE_IS,
     active: FilterMatchMode.EQUALS
@@ -83,6 +83,9 @@ function handleEchoEvent(event) {
         case ACTIONS.STORE:
             handleStore(event);
             break;
+        case ACTIONS.TOGGLE:
+            handleToggle(event);
+            break;
         default:
             console.error(`Unhandled action: ${event.action}`);
     }
@@ -110,6 +113,15 @@ function handleStore(event) {
     if (!exists) {
         records.value.unshift(event.data);
         markHighlight(event.data.id, 'new');
+    }
+}
+
+// Handle active status toggles broadcast from server (e.g., DataStream 'toggle')
+function handleToggle(event) {
+    const index = findRecordIndex(records, event.data.id);
+    if (index !== -1) {
+        records.value[index] = event.data;
+        markHighlight(event.data.id, 'updated');
     }
 }
 
@@ -212,17 +224,16 @@ function confirmDeleteRecord(event, campaignIds) {
     });
 }
 
-function toggleCampaignStatus(campaign) {
-    const newStatus = !campaign.active;
+function toggleActive(campaign) {
     useCampaignService
-        .toggleCampaignStatus(campaign.id, newStatus)
+        .toggleCampaignActive(campaign.id)
         .then((updatedCampaign) => {
             const index = findRecordIndex(records, campaign.id);
             if (index !== -1) {
-                records.value[index] = updatedCampaign;
-                markHighlight(updatedCampaign.id, 'updated');
+                records.value[index] = updatedCampaign.data;
+                markHighlight(updatedCampaign.data.id, 'updated');
             }
-            showToast('success', 'status_updated', 'campaign', 'tc');
+            showToast('success', ACTIONS.EDIT, 'campaign', 'tc');
         })
         .catch((error) => {
             console.error('Error toggling campaign status:', error);
@@ -567,17 +578,28 @@ onUnmounted(() => {
                     </template>
                     <template #body="{ data }">
                         <DataCell>
-                            <div :class="{ 'font-bold': frozenColumns.default_media }">{{ data.default_media || '-' }}</div>
+                            <div class="flex items-center gap-3" :class="{ 'font-bold': frozenColumns.default_media }">
+                                <template v-if="data.default_media">
+                                    <template v-if="isImageMedia(data.default_media)">
+                                        <Image :src="getMediaUrl(data.default_media)" :alt="getMediaName(data.default_media)" imageStyle="width: 64px; height: 64px; object-fit: cover; border-radius: 0.375rem;" preview />
+                                    </template>
+                                    <template v-else-if="isVideoMedia(data.default_media)">
+                                        <div class="relative" style="width: 64px; height: 64px">
+                                            <video :src="getMediaUrl(data.default_media)" preload="metadata" muted playsinline style="width: 64px; height: 64px; object-fit: cover; border-radius: 0.375rem"></video>
+                                            <i class="pi pi-play absolute inset-0 m-auto text-white text-sm flex items-center justify-center" style="filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))"></i>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <a :href="getMediaUrl(data.default_media)" target="_blank" rel="noopener" class="text-primary-500 truncate max-w-40" :title="getMediaName(data.default_media)">{{
+                                            getMediaName(data.default_media) || getMediaUrl(data.default_media)
+                                        }}</a>
+                                    </template>
+                                </template>
+                                <template v-else>
+                                    <span>-</span>
+                                </template>
+                            </div>
                         </DataCell>
-                    </template>
-                    <template #filter="{ filterModel, applyFilter }">
-                        <InputGroup>
-                            <InputText v-model="filterModel.value" size="small" />
-                            <InputGroupAddon>
-                                <Button size="small" v-tooltip.top="t('common.labels.apply')" icon="pi pi-check" severity="primary" @click="applyFilter()" />
-                                <Button :disabled="!filterModel.value" size="small" v-tooltip.top="t('common.labels.clear')" outlined icon="pi pi-times" severity="danger" @click="((filterModel.value = null), applyFilter())" />
-                            </InputGroupAddon>
-                        </InputGroup>
                     </template>
                 </Column>
 
@@ -609,16 +631,14 @@ onUnmounted(() => {
                     <template #body="{ data }">
                         <DataCell>
                             <div class="flex items-center gap-2" :class="{ 'font-bold': frozenColumns.active }">
-                                <Tag :value="data.active ? t('common.labels.active') : t('common.labels.inactive')" :severity="data.active ? 'success' : 'danger'" rounded size="small" />
-                                <Button
-                                    v-if="authStore.hasPermission('update_campaign')"
-                                    :icon="data.active ? 'pi pi-eye-slash' : 'pi pi-eye'"
-                                    :severity="data.active ? 'danger' : 'success'"
-                                    size="small"
-                                    text
+                                <Tag
+                                    :value="data.active ? t('common.labels.active') : t('common.labels.inactive')"
+                                    :severity="data.active ? 'success' : 'danger'"
+                                    :icon="data.active ? 'pi pi-check-circle' : 'pi pi-times-circle'"
                                     rounded
-                                    @click="toggleCampaignStatus(data)"
-                                    v-tooltip.top="data.active ? t('common.tooltips.deactivate') : t('common.tooltips.activate')"
+                                    size="small"
+                                    :pt="{ root: { class: authStore.hasPermission('update_campaign') ? 'cursor-pointer' : '' } }"
+                                    @click="authStore.hasPermission('update_campaign') && toggleActive(data)"
                                 />
                             </div>
                         </DataCell>

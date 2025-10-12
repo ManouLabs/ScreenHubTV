@@ -90,6 +90,17 @@
                 "message": "Êtes-vous sûr de vouloir supprimer les {entity} sélectionnés ?"
             }
         },
+        "file_upload": {
+            "select_file": "اختر ملف",
+            "select_files": "اختر ملفات",
+            "choose": "اختيار",
+            "clear": "مسح",
+            "file_selected": "تم اختيار الملف",
+            "files_selected": "ملفات محددة",
+            "drag_drop_hint": "اسحب وأفلت الملفات هنا أو انقر للتصفح",
+            "max_size": "الحد الأقصى للحجم",
+            "accepted_formats": "التنسيقات المقبولة"
+        },
         "toasts": {
             "create": {
                 "summary": "{entity} créé(e)",
@@ -338,5 +349,30 @@
         "aria.zoomOut": "تصغير",
         "aria.rotateRight": "تدوير لليمين",
         "aria.rotateLeft": "تدوير لليسار"
+    },
+    "campaign": {
+        "columns": {
+            "name": "اسم الحملة",
+            "start_date": "تاريخ البدء",
+            "end_date": "تاريخ الانتهاء",
+            "default_media": "الوسائط الافتراضية",
+            "media_files": "ملفات الوسائط",
+            "active": "الحالة"
+        },
+        "fields": {
+            "name": "اسم الحملة",
+            "start_date": "تاريخ البدء",
+            "end_date": "تاريخ الانتهاء",
+            "default_media": "الوسائط الافتراضية",
+            "media_files": "ملفات الوسائط",
+            "media_files_placeholder": "اختر الصور والفيديوهات لحملتك",
+            "active": "نشط"
+        },
+        "labels": {
+            "status_active": "نشط",
+            "status_inactive": "غير نشط",
+            "duration": "المدة",
+            "campaign_period": "فترة الحملة"
+        }
     }
 }
