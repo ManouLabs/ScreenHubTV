@@ -13,7 +13,6 @@ const { t } = useI18n();
 const loading = useLoading();
 const record = ref({});
 const uploadRef = ref(null);
-const removeDefaultMedia = ref(false);
 const dialogRef = inject('dialogRef');
 const action = ref();
 const schema = campaignSchema;
@@ -70,12 +69,8 @@ const handleSubmit = async () => {
             }
         });
         submitData.append('default_media', file);
-        removeDefaultMedia.value = false;
     } else {
         delete campaignData.default_media;
-        if (removeDefaultMedia.value) {
-            campaignData._remove_default_media = true;
-        }
         if (typeof campaignData.active === 'boolean') {
             campaignData.active = campaignData.active;
         }
@@ -107,7 +102,7 @@ onMounted(() => {
         record.value = JSON.parse(JSON.stringify(original));
     }
     action.value = dialogRef.value.data.action;
-    console.log('Record action:', record.value);
+
     if (!('default_media' in record.value)) {
         record.value.default_media = null;
     }
@@ -126,14 +121,6 @@ onMounted(() => {
         record.value.__original_start_date = record.value.start_date;
     }
 });
-const handleUploadSelect = () => {
-    removeDefaultMedia.value = false;
-};
-const handleUploadRemove = (e) => {
-    if (e && e.reason === 'existing') {
-        removeDefaultMedia.value = true;
-    }
-};
 </script>
 
 <template>
@@ -190,8 +177,6 @@ const handleUploadRemove = (e) => {
                 uploadMode="advanced"
                 :previewWidth="120"
                 :emitUpdate="false"
-                @select="handleUploadSelect"
-                @remove="handleUploadRemove"
                 @blur="onBlurField('default_media')"
             />
             <div class="field">

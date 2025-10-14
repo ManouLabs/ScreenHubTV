@@ -24,7 +24,10 @@ export const useCampaignService = {
     async updateCampaign(campaignId, updatedData) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
-            const response = await apiClient.put(`/api/admin/campaigns/${campaignId}`, updatedData);
+            updatedData.append('_method', 'PUT');
+            const response = await apiClient.post(`/api/admin/campaigns/${campaignId}`, updatedData, {
+                headers: { 'X-Socket-Id': window.Echo?.socketId?.() }
+            });
             return response.data;
         } catch (error) {
             throw error;
@@ -34,7 +37,9 @@ export const useCampaignService = {
     async toggleCampaignActive(campaignId) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
-            const response = await apiClient.patch(`/api/admin/campaigns/${campaignId}/toggle-active`);
+            const response = await apiClient.patch(`/api/admin/campaigns/${campaignId}/toggle-active`, null, {
+                headers: { 'X-Socket-Id': window.Echo?.socketId?.() }
+            });
             return response.data;
         } catch (error) {
             throw error;
@@ -44,7 +49,10 @@ export const useCampaignService = {
     async deleteCampaigns(campaignsIds) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
-            const response = await apiClient.delete('/api/admin/campaigns', { data: { campaigns: campaignsIds } });
+            const response = await apiClient.delete('/api/admin/campaigns', {
+                data: { campaigns: campaignsIds },
+                headers: { 'X-Socket-Id': window.Echo?.socketId?.() }
+            });
             return response.data;
         } catch (error) {
             throw error;

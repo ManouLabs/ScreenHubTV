@@ -68,6 +68,7 @@ const subscription = ref(null);
 
 function subscribeToEcho() {
     subscription.value = Echo.private('data-stream.campaign').listen('DataStream', (event) => {
+        console.log('Received DataStream event:', event);
         handleEchoEvent(event);
     });
 }
@@ -165,6 +166,7 @@ const openDialog = () => {
             if (result && result.data?.record?.id) {
                 switch (result.data?.action) {
                     case ACTIONS.CREATE:
+                        console.log('Created record:', result.data.record);
                         records.value.unshift(result.data.record);
                         markHighlight(result.data.record.id, 'new');
                         showToast('success', ACTIONS.CREATE, 'campaign', 'tc');
