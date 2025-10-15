@@ -149,7 +149,7 @@ const openDialog = () => {
         props: {
             header: t('common.titles.add', { entity: t('entity.campaign') }),
             style: {
-                width: '40vw'
+                width: '30vw'
             },
             breakpoints: {
                 '960px': '75vw',

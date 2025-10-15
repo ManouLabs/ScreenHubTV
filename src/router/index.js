@@ -11,16 +11,28 @@ const adminRoutes = [
         meta: { requiresAuth: true, requiresPermission: 'view_dashboard' }
     },
     {
+        path: 'campaigns',
+        name: 'campaigns',
+        component: () => import('@/views/admin/campaigns/Campaigns.vue'),
+        meta: { requiresAuth: true, requiresPermission: 'view_campaigns' }
+    },
+    {
         path: 'customers',
         name: 'customers',
         component: () => import('@/views/admin/customers/Customers.vue'),
         meta: { requiresAuth: true, requiresPermission: 'view_customers' }
     },
     {
-        path: 'campaigns',
-        name: 'campaigns',
-        component: () => import('@/views/admin/campaigns/Campaigns.vue'),
-        meta: { requiresAuth: true, requiresPermission: 'view_campaigns' }
+        path: 'locations',
+        name: 'locations',
+        component: () => import('@/views/admin/locations/Locations.vue'),
+        meta: { requiresAuth: true, requiresPermission: 'view_locations' }
+    },
+    {
+        path: 'groups',
+        name: 'groups',
+        component: () => import('@/views/admin/groups/Groups.vue'),
+        meta: { requiresAuth: true, requiresPermission: 'view_groups' }
     },
     {
         path: 'users',

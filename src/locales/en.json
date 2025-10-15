@@ -6,6 +6,10 @@
         "roles": "Roles",
         "customer": "Customer",
         "customers": "Customers",
+        "location": "Location",
+        "locations": "Locations",
+        "group": "Group",
+        "groups": "Groups",
         "campaign": "Campaign",
         "campaigns": "Campaigns",
         "my_account": "Account",
@@ -195,10 +199,12 @@
             "home": "Home",
             "dashboard": "Dashboard",
             "customers": "Customers",
+            "locations": "Locations",
             "campaigns": "Campaigns",
             "user": "User",
             "users": "Users",
-            "roles": "Roles"
+            "roles": "Roles",
+            "groups": "Groups"
         },
         "top_bar": {
             "search": "Search...",
@@ -251,6 +257,21 @@
             "nif": "NIF",
             "nis": "NIS",
             "rib": "RIB",
+            "created_at": "Created At",
+            "updated_at": "Updated At"
+        }
+    },
+    "location": {
+        "columns": {
+            "name": "Name",
+            "created_at": "Created At",
+            "updated_at": "Updated At"
+        }
+    },
+    "group": {
+        "columns": {
+            "name": "Name",
+            "location": "Location",
             "created_at": "Created At",
             "updated_at": "Updated At"
         }
