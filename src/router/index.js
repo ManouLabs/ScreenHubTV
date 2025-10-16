@@ -29,6 +29,12 @@ const adminRoutes = [
         meta: { requiresAuth: true, requiresPermission: 'view_locations' }
     },
     {
+        path: 'screens',
+        name: 'screens',
+        component: () => import('@/views/admin/screens/Screens.vue'),
+        meta: { requiresAuth: true, requiresPermission: 'view_screens' }
+    },
+    {
         path: 'groups',
         name: 'groups',
         component: () => import('@/views/admin/groups/Groups.vue'),

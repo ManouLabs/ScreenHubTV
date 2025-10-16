@@ -13,7 +13,9 @@
         "campaign": "Campaign",
         "campaigns": "Campaigns",
         "my_account": "Account",
-        "my_informations": "Account Information"
+        "my_informations": "Account Information",
+        "screen": "Screen",
+        "screens": "Screens"
     },
     "common": {
         "contents": {
@@ -204,7 +206,9 @@
             "user": "User",
             "users": "Users",
             "roles": "Roles",
-            "groups": "Groups"
+            "groups": "Groups",
+            "screens": "Screens",
+            "screens_management": "Screens management"
         },
         "top_bar": {
             "search": "Search...",

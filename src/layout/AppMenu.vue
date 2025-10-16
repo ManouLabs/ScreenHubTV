@@ -32,16 +32,29 @@ const model = computed(() => [
                 visible: can('view_customers')
             },
             {
-                label: t('navigation.side_bar.locations'),
-                icon: 'pi pi-fw pi-map-marker',
-                to: '/admin/locations',
-                visible: can('view_locations')
-            },
-            {
-                label: t('navigation.side_bar.groups'),
+                label: t('navigation.side_bar.screens_management'),
                 icon: 'pi pi-fw pi-desktop',
-                to: '/admin/groups',
-                visible: can('view_groups')
+                visible: can('view_screens') || can('view_groups') || can('view_locations'),
+                items: [
+                    {
+                        label: t('navigation.side_bar.screens'),
+                        icon: 'pi pi-fw pi-desktop',
+                        to: '/admin/screens',
+                        visible: can('view_screens')
+                    },
+                    {
+                        label: t('navigation.side_bar.groups'),
+                        icon: 'pi pi-fw pi-sitemap',
+                        to: '/admin/groups',
+                        visible: can('view_groups')
+                    },
+                    {
+                        label: t('navigation.side_bar.locations'),
+                        icon: 'pi pi-fw pi-map-marker',
+                        to: '/admin/locations',
+                        visible: can('view_locations')
+                    }
+                ]
             },
             {
                 label: t('navigation.side_bar.user'),

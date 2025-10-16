@@ -3,7 +3,9 @@
         "user": "مستخدم",
         "users": "المستخدمون",
         "role": "دور",
-        "roles": "الأدوار"
+        "roles": "الأدوار",
+        "screen": "شاشة",
+        "screens": "شاشات"
     },
     "common": {
         "contents": {
@@ -147,6 +149,8 @@
             "user": "مستخدم",
             "users": "المستخدمون",
             "roles": "الأدوار",
+            "screens": "شاشات",
+            "screens_management": "إدارة الشاشات",
             "profile": "الملف الشخصي",
             "logout": "تسجيل الخروج"
         },
