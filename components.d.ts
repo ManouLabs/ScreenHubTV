@@ -14,15 +14,19 @@ declare module 'vue' {
     Contact: typeof import('./src/components/Contact.vue')['default']
     DataCell: typeof import('./src/components/DataCell.vue')['default']
     DataTableColumn: typeof import('./src/components/DataTableColumn.vue')['default']
-    Divider: typeof import('primevue/divider')['default']
+    Dropdown: typeof import('primevue/dropdown')['default']
     DynamicDialog: typeof import('primevue/dynamicdialog')['default']
     ErrorMessage: typeof import('./src/components/ErrorMessage.vue')['default']
     FileUploadField: typeof import('./src/components/FileUploadField.vue')['default']
     FloatingConfigurator: typeof import('./src/components/FloatingConfigurator.vue')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
     IconField: typeof import('primevue/iconfield')['default']
+    InputGroup: typeof import('primevue/inputgroup')['default']
+    InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputIcon: typeof import('primevue/inputicon')['default']
+    InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    Listbox: typeof import('primevue/listbox')['default']
     Menu: typeof import('primevue/menu')['default']
     Message: typeof import('primevue/message')['default']
     OverlayBadge: typeof import('primevue/overlaybadge')['default']
@@ -35,8 +39,5 @@ declare module 'vue' {
     Skeleton: typeof import('primevue/skeleton')['default']
     Toast: typeof import('primevue/toast')['default']
     VirtualScroller: typeof import('primevue/virtualscroller')['default']
-  }
-  export interface ComponentCustomProperties {
-    StyleClass: typeof import('primevue/styleclass')['default']
   }
 }

@@ -2,6 +2,7 @@
 import apiClient from '@/services/axios';
 import Echo from 'laravel-echo';
 
+// Initialize and attach to window for global access
 window.Echo = new Echo({
     broadcaster: 'reverb',
     key: import.meta.env.VITE_REVERB_APP_KEY,
@@ -27,3 +28,11 @@ window.Echo = new Echo({
         };
     }
 });
+
+// Convenience helper for presence channels
+export function joinPresence(channelName) {
+    return window.Echo.join(channelName);
+}
+
+// Export Echo instance for optional direct usage
+export default window.Echo;

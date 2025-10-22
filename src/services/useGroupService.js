@@ -11,6 +11,15 @@ export const useGroupService = {
         }
     },
 
+    async getPublicGroups(params = {}) {
+        try {
+            const response = await apiClient.get('/api/groups', { params });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     async storeGroup(groupData) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');

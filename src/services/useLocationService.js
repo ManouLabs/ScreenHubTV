@@ -11,6 +11,15 @@ export const useLocationService = {
         }
     },
 
+    async getPublicLocations(params = {}) {
+        try {
+            const response = await apiClient.get('/api/locations', { params });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     async storeLocation(locationData) {
         try {
             await apiClient.get('/sanctum/csrf-cookie');
