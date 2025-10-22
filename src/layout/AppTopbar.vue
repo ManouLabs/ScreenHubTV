@@ -132,11 +132,12 @@ const menuItems = computed(() => [
                 <i class="pi pi-bars"></i>
             </button>
 
-            <router-link @click="onLogoClick" to="/" class="layout-topbar-logo">
-                <svg viewBox="0 0 54 40" xmlns="http://www.w3.org/2000/svg" fill="none">
-                    <!-- Your SVG logo here -->
-                </svg>
-                <span>ScreenHub</span>
+            <router-link @click="onLogoClick" to="/" class="layout-topbar-logo flex items-center gap-3">
+                <img src="/demo/images/logo.svg" alt="ScreenHub logo" class="h-8 w-auto" />
+                <div class="flex flex-col">
+                    <span class="text-primary text-xl font-bold dark:text-surface-0 -mb-1 -mt-2">ScreenHub</span>
+                    <span class="text-xs text-muted-color">Broadcast Smarter</span>
+                </div>
             </router-link>
         </div>
 

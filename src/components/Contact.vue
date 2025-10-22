@@ -133,7 +133,7 @@ const validateContactMethodValue = (contactIndex, methodIndex) => {
 
         <!-- Contacts List -->
         <div class="space-y-6">
-            <div v-for="(contact, contactIndex) in localContacts" :key="contactIndex" class="contact-card border rounded-lg p-6 bg-white shadow-sm">
+            <div v-for="(contact, contactIndex) in localContacts" :key="contactIndex" class="contact-card border border-surface-200 dark:border-surface-700 rounded-lg p-6 bg-surface-0 dark:bg-surface-900 shadow-sm">
                 <!-- Remove Contact Button (for contacts beyond the first) -->
                 <div v-if="localContacts.length > 1" class="flex justify-end mb-4">
                     <Button icon="pi pi-trash" @click="removeContact(contactIndex)" severity="danger" size="small" outlined :title="t('contact.buttons.remove_contact')" />
@@ -209,11 +209,11 @@ const validateContactMethodValue = (contactIndex, methodIndex) => {
                         <Button icon="pi pi-plus" :label="t('contact.buttons.add_contact_method')" @click="addContactMethod(contactIndex)" size="small" outlined />
                     </div>
 
-                    <div v-if="contact.contactMethods.length === 0" class="text-gray-500 text-center py-4">
+                    <div v-if="contact.contactMethods.length === 0" class="text-muted-color text-center py-4">
                         {{ t('contact.messages.no_contact_methods') }}
                     </div>
 
-                    <Fieldset :legend="t('contact.labels.contact_methods')" class="mb-4 bg-gray-500 p-4 rounded-lg">
+                    <Fieldset :legend="t('contact.labels.contact_methods')" class="mb-4 p-4 rounded-lg border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800">
                         <div v-if="contact.contactMethods.length > 0" class="space-y-3">
                             <div v-for="(contactMethod, methodIndex) in contact.contactMethods" :key="methodIndex">
                                 <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-start">
@@ -269,7 +269,7 @@ const validateContactMethodValue = (contactIndex, methodIndex) => {
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="text-gray-500 text-center py-4">
+                        <div v-else class="text-muted-color text-center py-4">
                             {{ t('contact.messages.no_contact_methods') }}
                         </div>
                     </Fieldset>
