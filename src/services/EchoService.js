@@ -29,10 +29,5 @@ window.Echo = new Echo({
     }
 });
 
-// Convenience helper for presence channels
-export function joinPresence(channelName) {
-    return window.Echo.join(channelName);
-}
-
 // Export Echo instance for optional direct usage
 export default window.Echo;

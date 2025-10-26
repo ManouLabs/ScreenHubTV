@@ -6,7 +6,8 @@ export const useScreenStore = defineStore('screen', {
         deviceId: null,
         locationId: null,
         groupId: null,
-        screenNumber: null
+        screenNumber: null,
+        online: null
     }),
     actions: {
         setDeviceId(id) {
@@ -22,6 +23,9 @@ export const useScreenStore = defineStore('screen', {
         },
         setScreenNumber(num) {
             this.screenNumber = num;
+        },
+        setOnline(status) {
+            this.online = status;
         },
         reset() {
             this.deviceId = null;

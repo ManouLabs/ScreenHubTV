@@ -280,6 +280,23 @@
             "updated_at": "Updated At"
         }
     },
+    "screen": {
+        "columns": {
+            "device_id": "Device ID",
+            "location": "Location",
+            "group": "Group",
+            "screen_number": "Screen Number",
+            "online": "Status",
+            "created_at": "Created At",
+            "updated_at": "Updated At"
+        },
+        "labels": {
+            "online": "Online",
+            "offline": "Offline",
+            "device_not_found": "Device not found. Please check the Device ID.",
+            "media_received": "Media received successfully!"
+        }
+    },
     "campaign": {
         "columns": {
             "name": "Campaign Name",

@@ -5,7 +5,6 @@ import { useScreenService } from '@/services/useScreenService';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useLoading } from '@/stores/useLoadingStore';
 import { useScreenStore } from '@/stores/useScreenStore';
-import { persistDeviceId } from '@/utilities/device-id';
 import { ACTIONS, useShowToast } from '@/utilities/toast';
 import { screenOnboardingSchema } from '@/validations/screen';
 import { validate, validateField } from '@/validations/validate';
@@ -35,8 +34,6 @@ const groupsLoading = ref(false);
 // Validation helpers
 const schema = screenOnboardingSchema;
 const buildPayload = () => ({
-    // Device ID is now provided by the server; do not send it from client
-    location_id: Number(record.value.location_id),
     group_id: Number(record.value.group_id),
     screen_number: Number(record.value.screen_number)
 });
@@ -107,7 +104,6 @@ function onFormSubmit() {
             // Expect server to return the assigned device id
             const deviceId = resp?.device_id || resp?.data?.device_id || resp?.screen?.device_id || '';
             if (deviceId) {
-                persistDeviceId(deviceId);
                 screenStore.setDeviceId(deviceId);
             }
             // Update store with the selected context
