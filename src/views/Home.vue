@@ -39,19 +39,19 @@ async function checkScreen() {
 
 function subscribe() {
     if (exist.value) {
+        useScreenService.setScreenOnline(deviceId.value, true);
         Echo.channel(`screen.${deviceId.value}`).listen('.DisplayMedia', (event) => {
-            console.log('DisplayMedia received:', event);
             waitingForMedia.value = false;
         });
     }
 }
-
 onMounted(async () => {
     await checkScreen();
     subscribe();
 });
 
 onUnmounted(() => {
+    useScreenService.setScreenOnline(deviceId.value, false);
     Echo.leave(`screen.${deviceId.value}`);
 });
 </script>

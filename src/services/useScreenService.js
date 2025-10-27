@@ -31,5 +31,17 @@ export const useScreenService = {
             }
             throw error;
         }
+    },
+    async setScreenOnline(deviceId, status) {
+        try {
+            await apiClient.get('/sanctum/csrf-cookie');
+            const response = await apiClient.put(`/api/screens/${deviceId}/${status}`);
+            return response.data;
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                return null;
+            }
+            throw error;
+        }
     }
 };
